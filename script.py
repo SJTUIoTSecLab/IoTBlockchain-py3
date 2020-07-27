@@ -1,6 +1,9 @@
 # coding:utf-8
 
 # 参考：https://en.bitcoin.it/wiki/Script
+from __future__ import absolute_import
+from builtins import str
+from builtins import object
 import hashlib
 from binascii import hexlify, unhexlify
 
@@ -145,7 +148,7 @@ class Script(object):
             return False
 
 
-class Stack:
+class Stack(object):
     def __init__(self):
         self.items = []
 
