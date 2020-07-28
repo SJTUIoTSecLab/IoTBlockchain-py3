@@ -1,5 +1,8 @@
 # coding:utf-8
 
+from __future__ import absolute_import
+from builtins import str
+from builtins import object
 import hashlib
 import json
 from binascii import hexlify

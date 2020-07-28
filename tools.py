@@ -1,4 +1,5 @@
 # coding:utf-8
+from __future__ import print_function
 import rsa
 
 
@@ -44,4 +45,4 @@ signature = rsa.sign(message.encode(), privkey, 'SHA-1')
 try:
     rsa.verify(message.encode(), signature, pubkey)
 except rsa.pkcs1.VerificationError:
-    print 'invalid'
+    print('invalid')

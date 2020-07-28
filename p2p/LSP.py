@@ -1,5 +1,8 @@
+from __future__ import print_function
 
 # coding: utf-8
+from builtins import range
+from builtins import object
 import threading
 import numpy
 class LSP(object):
@@ -94,8 +97,8 @@ class LSP(object):
                             break
                     c[i][num]=edge
                     c[num][i]=edge               #检查
-	print "lspgroup生成的树"
-	print c
+	print("lspgroup生成的树")
+	print(c)
 
                 
 
@@ -148,8 +151,8 @@ class LSP(object):
 	
 	#删除父节点在kids中的存在
 	
-        print "kids:"
-	print kids
+        print("kids:")
+	print(kids)
         return kids
 	
     def addmessage(self,msg):

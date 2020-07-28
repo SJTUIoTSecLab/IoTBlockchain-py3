@@ -1,4 +1,6 @@
 # coding: utf-8
+from builtins import range
+from builtins import object
 import threading
 
 from p2p import constant

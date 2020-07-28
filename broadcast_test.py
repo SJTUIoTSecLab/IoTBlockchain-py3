@@ -1,18 +1,21 @@
 # coding:utf-8
+from __future__ import print_function
+from future import standard_library
+standard_library.install_aliases()
 import json
 import random
 import time
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 
 def bootstrap(address, seeds):
     data = {
         "seeds": seeds
     }
-    req = urllib2.Request("http://" + address + "/bootstrap",
+    req = urllib.request.Request("http://" + address + "/bootstrap",
                           json.dumps(data),
                           {"Content-Type": "application/json"})
-    res_data = urllib2.urlopen(req)
+    res_data = urllib.request.urlopen(req)
     res = res_data.read()
     return res
 
@@ -43,7 +46,7 @@ def run():
 	
     ]
     i1=bootstrap("127.0.0.1:5000", node1_seeds)
-    print i1
+    print(i1)
     node2_seeds = [
         {"node_id": node1["node_id"], "ip":node1["ip"], "port":node1["port"]},
        
@@ -57,7 +60,7 @@ def run():
 	{"node_id": node10["node_id"], "ip": node10["ip"], "port": node10["port"]}
 	]
     i2=bootstrap("127.0.0.1:5001", node2_seeds)
-    print i2
+    print(i2)
     node3_seeds = [
         {"node_id": node1["node_id"], "ip":node1["ip"], "port":node1["port"]},
         #{"node_id": node2["node_id"], "ip":node2["ip"], "port":node2["port"]},
@@ -71,7 +74,7 @@ def run():
 	{"node_id": node10["node_id"], "ip": node10["ip"], "port": node10["port"]}
     ]
     i3=bootstrap("127.0.0.1:5002", node3_seeds)
-    print i3
+    print(i3)
     node4_seeds=[
 	#{"node_id": node1["node_id"], "ip":node1["ip"], "port":node1["port"]},
         {"node_id": node2["node_id"], "ip":node2["ip"], "port":node2["port"]},
@@ -168,9 +171,9 @@ def run():
     node2_wallet = node2["wallet"]
     node3_wallet = node3["wallet"]
     time.sleep(1)
-    print "change"
+    print("change")
     simubroad("127.0.0.1:5000","a test")
-    print "end"
+    print("end")
     
 
 
@@ -181,41 +184,41 @@ def simulate_tx(address, sender, receiver, amount):
         "amount": amount
     }
 
-    req = urllib2.Request(url="http://" + address + "/transactions/new",
+    req = urllib.request.Request(url="http://" + address + "/transactions/new",
                           headers={"Content-Type": "application/json"}, data=json.dumps(data))
-    res_data = urllib2.urlopen(req)
+    res_data = urllib.request.urlopen(req)
     res = res_data.read()
     return res
 
 
 def get_balance(address, wallet_addres):
-    req = urllib2.Request(url="http://" + address + "/balance?address=" + wallet_addres,
+    req = urllib.request.Request(url="http://" + address + "/balance?address=" + wallet_addres,
                           headers={"Content-Type": "application/json"})
 
-    res_data = urllib2.urlopen(req)
+    res_data = urllib.request.urlopen(req)
     res = res_data.read()
     return json.loads(res)
 
 
 def get_node_info(address):
-    req = urllib2.Request(url="http://" + address + "/curr_node",
+    req = urllib.request.Request(url="http://" + address + "/curr_node",
                           headers={"Content-Type": "application/json"})
 
-    res_data = urllib2.urlopen(req)
+    res_data = urllib.request.urlopen(req)
     res = res_data.read()
     return json.loads(res)
 
 def get_test_info(address):
-    req=urllib2.Request(url="http://" + address + "/test",
+    req=urllib.request.Request(url="http://" + address + "/test",
 			  headers={"Content-Type": "application/json"})
-    res_data=urllib2.urlopen(req)
+    res_data=urllib.request.urlopen(req)
     res = res_data.read()
     return json.loads(res)
 
 def lspr(address):#address对它lspr里的节点发送lspr需求
-    req=urllib2.Request(url="http://"+address+"/lspr",
+    req=urllib.request.Request(url="http://"+address+"/lspr",
                         headers={"Content-Type": "application/json"})
-    res_data=urllib2.urlopen(req)
+    res_data=urllib.request.urlopen(req)
     res = res_data.read()
     return json.loads(res)
 
@@ -225,9 +228,9 @@ def simubroad(address,message):
         
     }
 
-    req = urllib2.Request(url="http://" + address + "/simubroad",
+    req = urllib.request.Request(url="http://" + address + "/simubroad",
                           headers={"Content-Type": "application/json"},     	                  data=json.dumps(data))
-    res_data = urllib2.urlopen(req)
+    res_data = urllib.request.urlopen(req)
     res = res_data.read()
     return res,210
     
