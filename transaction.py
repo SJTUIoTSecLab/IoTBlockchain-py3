@@ -32,7 +32,7 @@ class Transaction(object):
         return str(sha.hexdigest())
 
     def get_hash(self):
-        sha = hashlib.sha256(self.__str__())
+        sha = hashlib.sha256(self.__str__().encode('utf-8'))
         return sha.hexdigest()
 
     def is_coinbase(self):
@@ -40,7 +40,7 @@ class Transaction(object):
         coinbase不存在输入，txins为None
         :return:
         """
-        return self.txins[0].prev_txid == None
+        return self.txins[0].prev_txid is None
 
     def json_output(self):
         output = {
@@ -84,8 +84,8 @@ class TxInput(object):
         output = {
             'prev_txid': self.prev_txid,
             'prev_tx_out_idx': self.prev_tx_out_idx,
-            'signature': util.get_hash(self.signature) if self.signature != None else "",
-            'pubkey_hash': Script.sha160(str(self.pubkey)) if self.pubkey != None else ""
+            'signature': util.get_hash(self.signature) if self.signature is not None else "",
+            'pubkey_hash': Script.sha160(str(self.pubkey)) if self.pubkey is not None else ""
         }
         return output
 

@@ -560,13 +560,13 @@ class NodeManager(object):
 
     """
 
-    def __init__(self, ip, port=0, genisus_node=False, is_committee_node=False):
+    def __init__(self, ip, port=0, genisus_node=False, is_committee_node=False, expected_client_num=4):
         self.ip = ip
         self.port = port
         self.node_id = self.__random_id()
         self.address = (self.ip, self.port)
         self.buckets = KBucketSet(self.node_id)
-        self.is_committee=is_committee_node
+        self.is_committee = is_committee_node
         self.startflag = False #是否开始出块
         self.receivealltx_last = 0
         self.receivealltx = 0
@@ -574,6 +574,7 @@ class NodeManager(object):
         self.maxTime = 0
         self.view = 0 #轮次
         self.is_primary = genisus_node
+        self.expectedClientNum = expected_client_num
         self.committee_member = []
         # self.prepareMessages = []
         self.commitMessages = []
@@ -616,13 +617,15 @@ class NodeManager(object):
         # self.sendmessages_thread.daemon = True
         # self.sendmessages_thread.start()
 
-        # 矿工线程
-        if is_committee_node:
-            self.minner_thread = threading.Thread(target=self.minner)
-            self.minner_thread.daemon = True
-            self.minner_thread.start()
+        self.minner_thread = threading.Thread(target=self.minner)
+        self.minner_thread.daemon = True
 
         print('[Info] start new node', self.ip, self.port, self.node_id)
+
+    def start(self):
+        # 矿工线程
+        if self.is_committee:
+            self.minner_thread.start()
 
     def ping(self, sock, server_node_id, target_node_address):
         payload = packet.Ping(self.node_id, server_node_id)
@@ -772,13 +775,14 @@ class NodeManager(object):
         while True:
             # blockchain多个线程共享使用，需要加锁
             
-            if self.view == 0 and self.is_primary:
-                time.sleep(80)
+            if self.view == 0 and self.is_primary and self.expectedClientNum * 2 // 3 < len(self.committee_member):
+                time.sleep(10)
                 print("-------START--------")
                 self.sendrequest(0)
                 # first = False
 
-            if self.startflag and (self.receivealltx >= len(self.committee_member)) and (int(time.time())>self.maxTime):
+            if not (not self.startflag or self.receivealltx < len(self.committee_member) or
+                    int(time.time()) <= self.maxTime or self.expectedClientNum * 2 // 3 >= len(self.committee_member)):
                 print("-------collected enough tx: the start of commit-------")
                 # with self.lock:
                 print(len(self.blockchain.current_transactions))
