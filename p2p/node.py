@@ -788,7 +788,7 @@ class NodeManager(object):
                     int(time.time()) <= self.maxTime or self.expectedClientNum * 2 // 3 >= len(self.committee_member)):
                 print("-------collected enough tx: the start of commit-------")
                 # with self.lock:
-                print(len(self.blockchain.current_transactions))
+                print('current:', len(self.blockchain.current_transactions))
                 self.receivealltx_last = self.receivealltx
                 self.txinblock = len(self.blockchain.current_transactions)
                 # print "txinblock", self.txinblock
