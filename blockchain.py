@@ -493,8 +493,8 @@ class Blockchain(object):
         # 发送者为"0" 表明新挖出的币
         # coinbase_tx = self.new_coinbase_tx(self.get_wallet_address())
         # valid_transactions.append(coinbase_tx)
-        self.current_transactions = sorted(self.current_transactions, key=lambda x: x.timestamp,
-                                           reverse=False)  # 时间由小到大排
+        self.current_transactions = sorted(self.current_transactions, key=lambda x: (x.timestamp, x.txid),
+                                           reverse=False)  # 时间由小到大排，时间相同按txid排
 
         print("before merkle:")
         print("current tx:", len(self.current_transactions))

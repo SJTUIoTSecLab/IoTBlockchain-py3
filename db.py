@@ -132,6 +132,8 @@ def write_to_db(wallet_address, block):
 
     with open(wallet_address + '/' + block.current_hash, 'wb') as f:
         pickle.dump(block, f)
+    
+    print("write to db")
 
 
 def get_block_hash(wallet_address, index):
