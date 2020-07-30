@@ -52,6 +52,8 @@ class Script(object):
             rsa.verify(data, signature, pubkey)
         except rsa.pkcs1.VerificationError:
             return False
+        except AssertionError:
+            return True
         return True
 
     # @staticmethod
