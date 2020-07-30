@@ -619,6 +619,9 @@ class NodeManager(object):
 
         self.minner_thread = threading.Thread(target=self.minner)
         self.minner_thread.daemon = True
+        
+        # 用 run + simulation 运行的方案目前需要此线程
+        self.start()
 
         print('[Info] start new node', self.ip, self.port, self.node_id)
 
@@ -776,7 +779,7 @@ class NodeManager(object):
             # blockchain多个线程共享使用，需要加锁
             
             if self.view == 0 and self.is_primary and self.expectedClientNum * 2 // 3 < len(self.committee_member):
-                time.sleep(10)
+                time.sleep(20) # 用 run + simulation 运行时根据节点数量设置相应大的等待时间
                 print("-------START--------")
                 self.sendrequest(0)
                 # first = False

@@ -318,7 +318,7 @@ if __name__ == '__main__':
     else:
         genisus_node = False
 
-    node_manager = NodeManager('localhost', 0, genisus_node, True)
+    node_manager = NodeManager('localhost', 0, genisus_node, True, 2)
     blockchain = node_manager.blockchain
 
     print("Wallet address: %s" % blockchain.get_wallet_address())
