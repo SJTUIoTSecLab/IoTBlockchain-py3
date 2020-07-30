@@ -46,7 +46,7 @@ class Script(object):
         :param pubkey:
         :return:
         """
-        if data == None or signature == None or pubkey == None:
+        if data is None or signature is None or pubkey is None:
             return False
         try:
             rsa.verify(data, signature, pubkey)

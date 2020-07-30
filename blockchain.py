@@ -225,7 +225,7 @@ class Blockchain(object):
                 return False
             txin.signature = None
             txin.pubkey = prev_tx.txouts[txin.prev_tx_out_idx].pubkey_hash
-            data = tx_copy.get_hash()  # 待签名数据
+            data = tx_copy.get_hash().encode('utf-8')  # 待签名数据
 
             txin.pubkey = None
 
