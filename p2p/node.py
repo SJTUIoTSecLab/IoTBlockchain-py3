@@ -558,7 +558,7 @@ class NodeManager(object):
 
     """
 
-    def __init__(self, ip, port=0, genisus_node=False, is_committee_node=False, expected_client_num=4):
+    def __init__(self, ip, port=0, genisus_node=False, is_committee_node=False, expected_client_num=4, isServer=False):
         self.ip = ip
         self.port = port
         self.node_id = self.__random_id()
@@ -617,11 +617,14 @@ class NodeManager(object):
 
         self.minner_thread = threading.Thread(target=self.minner)
         self.minner_thread.daemon = True
+        if not isServer:
+            self.start()
 
         print('[Info] start new node', self.ip, self.port, self.node_id)
 
     def start(self):
         # 矿工线程
+        print("start protocol")
         if self.is_committee:
             self.minner_thread.start()
 
@@ -773,14 +776,14 @@ class NodeManager(object):
         while True:
             # blockchain多个线程共享使用，需要加锁
             
-            if self.view == 0 and self.is_primary and self.expectedClientNum * 2 // 3 < len(self.committee_member):
-                time.sleep(20) # 用 run + simulation 运行时根据节点数量设置相应大的等待时间
+            if self.view == 0 and self.is_primary:
+                time.sleep(30) # 用 run + simulation 运行时根据节点数量设置相应大的等待时间
                 print("-------START--------")
                 self.sendrequest(0)
                 # first = False
 
             if not (not self.startflag or self.receivealltx < len(self.committee_member) or
-                    int(time.time()) <= self.maxTime or self.expectedClientNum * 2 // 3 >= len(self.committee_member)):
+                    int(time.time()) <= self.maxTime):
                 print("-------collected enough tx: the start of commit-------")
                 # with self.lock:
                 print('current:', len(self.blockchain.current_transactions))

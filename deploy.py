@@ -1,3 +1,4 @@
+import asyncio
 import json
 import random
 import threading
@@ -5,8 +6,7 @@ import time
 import urllib.request
 from argparse import ArgumentParser
 from builtins import str
-from random import randint
-
+import random
 from flask import jsonify, request, Flask
 
 import db
@@ -56,12 +56,14 @@ def bootstrap(address, seeds):
     req = urllib.request.Request("http://" + address + "/bootstrap",
                                  json.dumps(data).encode('utf-8'),
                                  {"Content-Type": "application/json"})
-    res_data = urllib.request.urlopen(req)
-    res = res_data.read()
-    return res
+
+    try:
+        urllib.request.urlopen(req)
+    except Exception as e:
+        print(e)
 
 
-def start_simulation():
+async def start_simulation():
 
     while True:
         if len(node_list) == expectedClientNum:
@@ -81,6 +83,16 @@ def start_simulation():
     node_manager.start()
 
     time.sleep(1)
+
+    # first distribute some token to every nodes
+    for recv in range(1, len(node_list)):
+        perform_transaction(0, recv)
+
+    while True:
+        await asyncio.gather(*(generate_transactions(i) for i in range(0, len(node_list))))
+
+
+    '''
 
     node1_wallet = node_list[0]["wallet"]
     node2_wallet = node_list[1]["wallet"]
@@ -143,6 +155,42 @@ def start_simulation():
             time.sleep(random.random())
         time.sleep(10)
 
+'''
+
+
+async def generate_transactions(sender):
+    await asyncio.sleep(random.expovariate(0.5))
+    receiver = random.randint(0, len(node_list)-1)
+    if receiver == sender:
+        receiver = (receiver + 1) % len(node_list)
+
+    perform_transaction(sender, receiver)
+
+
+def perform_transaction(sender, receiver, amount=-1):
+
+    sender_wallet = node_list[sender]["wallet"]
+    receiver_wallet = node_list[receiver]["wallet"]
+
+    sender_address = str(node_list[sender]["ip"]) + ":" + str(node_list[sender]["port"])
+
+    if not amount > 0:
+        sender_balance = get_balance(sender_address, sender_wallet)
+
+        if sender_balance is None:
+            return
+
+        sender_balance = sender_balance['balance']
+
+        if sender_balance <= 0:
+            return
+
+        amount = random.random() * sender_balance / 10
+
+    print('send from node ' + str(sender) + ' to node ' + str(receiver) + ' with amount:' + str(amount))
+    simulate_tx(sender_address, sender_wallet, receiver_wallet, amount)
+
+
 
 def simulate_tx(address, sender, receiver, amount):
     data = dict(sender=sender, receiver=receiver, amount=amount)
@@ -158,9 +206,13 @@ def get_balance(address, wallet_address):
     req = urllib.request.Request(url="http://" + address + "/balance?address=" + wallet_address,
                                  headers={"Content-Type": "application/json"})
 
-    res_data = urllib.request.urlopen(req)
-    res = res_data.read()
-    return json.loads(res)
+    try:
+        res_data = urllib.request.urlopen(req)
+        res = res_data.read()
+        return json.loads(res)
+    except Exception as e:
+        print(e)
+        return None
 
 
 def get_node_info(address):
@@ -187,9 +239,6 @@ def bootstrap_app():
 
     all_nodes = node_manager.buckets.get_all_nodes()
     output = json.dumps(all_nodes, default=lambda obj: obj.__dict__, indent=4)
-
-    if not node_manager.is_primary:
-        node_manager.start()
 
     return output, 200
 
@@ -405,7 +454,7 @@ if __name__ == '__main__':
 
     if isServer:
 
-        node_manager = NodeManager('0.0.0.0', defaultPort, isServer, True, expectedClientNum)
+        node_manager = NodeManager('0.0.0.0', defaultPort, isServer, True, expectedClientNum, True)
         blockchain = node_manager.blockchain
 
         print("Wallet address: %s" % blockchain.get_wallet_address())
@@ -413,8 +462,6 @@ if __name__ == '__main__':
         thread = threading.Thread(target=app.run, args=('0.0.0.0', defaultPort))
         thread.setDaemon(True)
         thread.start()
-
-        time.sleep(1)
 
         serverNode = {
             'node_id': node_manager.node_id,
@@ -424,13 +471,16 @@ if __name__ == '__main__':
             'pubkey_hash': Script.sha160(str(blockchain.wallet.pubkey))
         }
         node_list.append(serverNode)
-        start_simulation()
+        loop =asyncio.get_event_loop()
+        loop.run_until_complete(start_simulation())
+
+        thread.join()
 
     else:
 
-        lport = randint(30000, 31000)
+        lport = random.randint(30000, 31000)
 
-        node_manager = NodeManager('0.0.0.0', lport, isServer, True)
+        node_manager = NodeManager('0.0.0.0', lport, isServer, True, expectedClientNum, False)
         blockchain = node_manager.blockchain
 
         print("Wallet address: %s" % blockchain.get_wallet_address())
@@ -439,5 +489,8 @@ if __name__ == '__main__':
         thread.setDaemon(True)
         thread.start()
 
-        time.sleep(1)
+        # shall be await app started
+        time.sleep(5)
         client_hello()
+
+        thread.join()
