@@ -324,6 +324,13 @@ class Blockchain(object):
         return tx
 
 
+    def new_report_tx(self, edgeId, meanSpeed, num):
+        tx = Tx_report(edgeId, meanSpeed, num, int(time()))
+        # sign TODO
+        self.received_transactions.append(tx)
+        return tx
+
+
     def get_balance_by_db(self, from_addr):
         """
         获取from_addr可以用于交易的TxOutput（未使用过的），读取交易池和区块链的本地副本，避免被加锁

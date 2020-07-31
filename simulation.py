@@ -66,6 +66,20 @@ def simulate_tx(address, vid):
     return res
 
 
+def main_street_tx(address, edgeId, meanSpeed, num):
+    data = {
+        'edgeId': edgeId,
+        'meanSpeed': meanSpeed,
+        'vehicleNum': num
+    }
+
+    req = urllib.request.Request(url="http://" + address + "/transactions/new_report",
+                          headers={"Content-Type": "application/json"}, data=bytes(json.dumps(data),'utf8'))
+    res_data = urllib.request.urlopen(req)
+    res = res_data.read().decode('utf8')
+    return res
+
+
 def prepare_nodes():
     node1 = get_node_info("127.0.0.1:5000")
     node2 = get_node_info("127.0.0.1:5001")
@@ -103,10 +117,6 @@ if __name__ == "__main__":
     traci.start([sumoBinary, "-c", "simulation.sumocfg"])
 
     for step in range(0,15000):
-        # traci.vehicle.setSpeed('a1.5',10)
-        # print(traci.vehicle.getIDList())
-        # print(traci.edge.getIDList())
-        # print(traci.inductionloop.getVehicleData('abcd'))
         traci.simulationStep()
         print(traci.simulation.getDepartedIDList())
         if step == 3:
@@ -125,5 +135,15 @@ if __name__ == "__main__":
                     print("new vehicle:", vid)
                     print("signed in rsu 3")
                     simulate_tx("127.0.0.1:5002", vid)
+            if step % 10 == 0:
+                v1 = traci.edge.getLastStepMeanSpeed('m1')
+                v2 = traci.edge.getLastStepMeanSpeed('m4')
+                n1 = traci.edge.getLastStepVehicleNumber('m1')
+                n2 = traci.edge.getLastStepVehicleNumber('m4')
+                print("main street report :")
+                print('m1', v1, n1)
+                print('m4', v2, n2)
+                main_street_tx('127.0.0.1:5000', 'm1', v1, n1)
+                main_street_tx('127.0.0.1:5001', 'm4', v2, n2)
             time.sleep(1)
     traci.close()

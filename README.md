@@ -30,8 +30,16 @@ Transactions (Internet of Vehicles) is simulated.
 
 Open your browser and you can visit the following address to :
 
-- http://127.0.0.1:5001/height ：get the height of blockchain
-- http://127.0.0.1:5001/tx_in_block?block_index=1：get the information of transactions in a certain block
+- http://127.0.0.1:5001/height : get the height of blockchain
+
+- http://127.0.0.1:5001/tx_in_block?block_index=1 : get the information of transactions in a certain block
+
+	e.g.
+
+	```
+	{"0": {"txid": "c8a8019259f6779b274206e8a9da0c7821003009165a48eb2d60bec7807ad09b", "timestamp": "2020-07-31 20:53:36", "type": "vid", "vid": "a3.0"}, "1": {"txid": "8d9a1dada6191edd5f5d379274e0dba4432206da86dfd227bebb20eb7f10dda0", "timestamp": "2020-07-31 20:53:43", "type": "report", "edgeId": "m1", "meanSpeed": 20.844183340424205, "vehicleNum": 2}}
+	```
+
 
 Or send a post request to the following address to :
 

@@ -13,6 +13,7 @@ import db
 from p2p.node import NodeManager, Node
 from script import Script, get_address_from_ripemd160
 from wallet import Wallet
+from transaction import *
 
 try:
     from urllib.parse import urlparse
@@ -165,6 +166,29 @@ def new_vid_transaction():
         return jsonify(response), 200
 
 
+@app.route('/transactions/new_report', methods=['POST'])
+def new_report_tx():
+    values = request.get_json()
+    required = ['edgeId', 'meanSpeed', 'vehicleNum']
+    if not all(k in values for k in required):
+        return 'Missing values', 400
+
+    # Create a new Transaction
+    new_tx = blockchain.new_report_tx(values['edgeId'], values['meanSpeed'], values['vehicleNum'])
+
+    if new_tx:
+        output = {
+            'message': 'new transaction been created successfully!',
+            'received_transactions': [tx.json_output() for tx in blockchain.received_transactions]
+        }
+        json_output = json.dumps(output, indent=4)
+        return json_output, 200
+
+    else:
+        response = {'message': "Not enough funds!"}
+        return jsonify(response), 200
+
+
 @app.route('/balance', methods=['GET'])
 def get_balance():
     address = request.args.get('address')
@@ -227,12 +251,25 @@ def tx_in_block():
     tmp = dict()
     cnt = 0
     for tx in block.transactions:
-        tmp[str(cnt)] = {
-            'txid': tx.txid,
-            'timestamp': time.strftime("%Y-%m-%d %H:%M:%S",time.localtime(tx.timestamp)),
-            'vid': tx.vid
-        }
-        cnt += 1
+        if isinstance(tx, Tx_vid):
+            tmp[str(cnt)] = {
+                'txid': tx.txid,
+                'timestamp': time.strftime("%Y-%m-%d %H:%M:%S",time.localtime(tx.timestamp)),
+                'type': 'vid',
+                'vid': tx.vid
+            }
+            cnt += 1
+        elif isinstance(tx, Tx_report):
+            tmp[str(cnt)] = {
+                'txid': tx.txid,
+                'timestamp': time.strftime("%Y-%m-%d %H:%M:%S",time.localtime(tx.timestamp)),
+                'type': 'report',
+                'edgeId': tx.edgeId,
+                'meanSpeed': tx.meanSpeed,
+                'vehicleNum': tx.vehicleNum
+            }
+            cnt += 1
+
     
     return json.dumps(tmp), 200
 

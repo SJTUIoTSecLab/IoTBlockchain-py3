@@ -171,6 +171,7 @@ class Tx_vid(object):
         output = {
             'txid': self.txid,
             'timestamp': self.timestamp,
+            'type': 'vid',
             'vid': self.vid
         }
         return output
@@ -178,3 +179,43 @@ class Tx_vid(object):
     def __str__(self):
         return json.dumps(self.json_output(), default=lambda obj: obj.__dict__, sort_keys=True, indent=4)
 
+
+class Tx_report(object):
+    def __init__(self, edgeId, meanSpeed, num, timestamp):
+        """
+
+        :param txid: <str> 交易id
+        :param edgeId: <str> 道路id
+        :param meanSpeed: <double> 平均速度 无车时为最高限速 m/s
+        :param vehicleNum: <int> 车辆数量
+        """
+        self.edgeId = edgeId
+        self.meanSpeed = meanSpeed
+        self.vehicleNum = num
+        self.timestamp = timestamp
+        self.txid = self.get_txid()
+
+    def get_txid(self):
+        value = str(self.timestamp) + self.edgeId + str(self.meanSpeed) + str(self.vehicleNum)
+        sha = hashlib.sha256(value.encode('utf8'))
+        return str(sha.hexdigest())
+
+    def get_hash(self):
+        sha = hashlib.sha256(self.__str__().encode('utf-8'))
+        return sha.hexdigest()
+
+    def json_output(self):
+        output = {
+            'txid': self.txid,
+            'timestamp': self.timestamp,
+            'type': 'report',
+            'edgeId': self.edgeId,
+            'meanSpeed': self.meanSpeed,
+            'vehicleNum': self.vehicleNum
+        }
+        return output
+
+    def __str__(self):
+        return json.dumps(self.json_output(), default=lambda obj: obj.__dict__, sort_keys=True, indent=4)
+
+    
