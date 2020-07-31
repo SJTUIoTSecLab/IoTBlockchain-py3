@@ -316,6 +316,14 @@ class Blockchain(object):
         # db.write_unconfirmed_tx_to_db(self.wallet.address, tx)
         return tx
 
+
+    def new_vid_transaction(self, vid):
+        tx = Tx_vid(vid, int(time()))
+        # self.sign_transaction(tx, self.wallet.privkey)  # 签名Tx
+        self.received_transactions.append(tx)
+        return tx
+
+
     def get_balance_by_db(self, from_addr):
         """
         获取from_addr可以用于交易的TxOutput（未使用过的），读取交易池和区块链的本地副本，避免被加锁
@@ -469,12 +477,12 @@ class Blockchain(object):
         new_block_attempt = None
 
         # 验证每一笔交易的有效性(备注：从最新的开始验证)
-        for idx in range(len(self.current_transactions)):
-            tx = self.current_transactions[-1 - idx]
-            if not self.verify_transaction(tx):
-                txid = tx.txid
-                print("[Info] Invalid transaction, remove it, tx:")
-                raise Error("[Error] do mine:Invalid transaction, remove it. Txid:" + txid)
+        # for idx in range(len(self.current_transactions)):
+        #     tx = self.current_transactions[-1 - idx]
+            # if not self.verify_transaction(tx):
+            #     txid = tx.txid
+            #     print("[Info] Invalid transaction, remove it, tx:")
+            #     raise Error("[Error] do mine:Invalid transaction, remove it. Txid:" + txid)
 
         # if len(self.current_transactions) < 3:
         #     # 至少要有5个以上的交易才可以开始进行挖矿
@@ -485,8 +493,8 @@ class Blockchain(object):
         # 发送者为"0" 表明新挖出的币
         # coinbase_tx = self.new_coinbase_tx(self.get_wallet_address())
         # valid_transactions.append(coinbase_tx)
-        self.current_transactions = sorted(self.current_transactions, key=lambda x: x.timestamp,
-                                           reverse=False)  # 时间由小到大排
+        self.current_transactions = sorted(self.current_transactions, key=lambda x: (x.timestamp, x.txid),
+                                           reverse=False)  # 时间由小到大排，时间相同按txid排
 
         print("before merkle:")
         print("current tx:", len(self.current_transactions))

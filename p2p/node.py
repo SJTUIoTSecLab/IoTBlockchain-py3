@@ -264,7 +264,6 @@ class ProcessMessages(socketserver.BaseRequestHandler):
                 #确认入链
                 if self.server.node_manager.view >= 1:
                     db.write_to_db(self.server.node_manager.blockchain.wallet.address, self.server.node_manager.blockcache)
-                    print("write to db")
             if self.server.node_manager.view >= 1:
                 self.server.node_manager.commitMessages = []
                 self.server.node_manager.maxTime = 0
@@ -292,7 +291,6 @@ class ProcessMessages(socketserver.BaseRequestHandler):
                 self.server.node_manager.sendalltx(self.server.node_manager.blockchain.send_transactions)
                 self.server.node_manager.startflag = True
         else:
-            self.server.node_manager.view += 1
             print("bft failed, start again")
             print("view:", self.server.node_manager.view)
             self.server.node_manager.GST = payload["GST"]
@@ -772,13 +770,11 @@ class NodeManager(object):
 
     def minner(self):
         member_index = 0
-
-        time.sleep(30)
-
         while True:
             # blockchain多个线程共享使用，需要加锁
             
             if self.view == 0 and self.is_primary and self.expectedClientNum * 2 // 3 < len(self.committee_member):
+                time.sleep(20) # 用 run + simulation 运行时根据节点数量设置相应大的等待时间
                 print("-------START--------")
                 self.sendrequest(0)
                 # first = False
@@ -787,7 +783,7 @@ class NodeManager(object):
                     int(time.time()) <= self.maxTime or self.expectedClientNum * 2 // 3 >= len(self.committee_member)):
                 print("-------collected enough tx: the start of commit-------")
                 # with self.lock:
-                print(len(self.blockchain.current_transactions))
+                print('current:', len(self.blockchain.current_transactions))
                 self.receivealltx_last = self.receivealltx
                 self.txinblock = len(self.blockchain.current_transactions)
                 # print "txinblock", self.txinblock
@@ -902,7 +898,6 @@ class NodeManager(object):
                 # 自身确认入链
                 if self.view >= 1:
                     db.write_to_db(self.blockchain.wallet.address, self.blockcache)
-                    print("write to db")         
             if self.view >=1:
                 self.commitMessages = []
                 self.maxTime = 0
@@ -935,7 +930,6 @@ class NodeManager(object):
             self.blockchain.send_transactions = deepcopy(self.blockchain.received_transactions)
             self.receivealltx -= self.receivealltx_last
             # print "transaction list reset"
-            self.view += 1
             print("view:", self.view)
             # print "++++++++++++++sendrequest&tx++++++++++++++++"
             self.sendalltx(self.blockchain.send_transactions)

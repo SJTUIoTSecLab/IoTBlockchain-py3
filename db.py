@@ -45,7 +45,7 @@ def write_unconfirmed_tx_to_db(wallet_address, tx):
         pass
 
     cf.set('unconfirmed_tx_index', str(unconfirmed_tx_counts), str(tx.txid))
-    cf.set('meta', 'unconfirmed_tx_counts', 1 + int(unconfirmed_tx_counts))
+    cf.set('meta', 'unconfirmed_tx_counts', str(1 + int(unconfirmed_tx_counts)))
 
     with open(wallet_address + '/miniblockchain.conf', 'w+') as f:
         cf.write(f)
@@ -123,7 +123,7 @@ def write_to_db(wallet_address, block):
     except configparser.NoSectionError as e:
         cf.add_section('index')
     except configparser.NoOptionError as e:
-        cf.set('meta', 'block_height', 1 + int(block_height))
+        cf.set('meta', 'block_height', str(1 + int(block_height)))
 
     cf.set('index', str(block.index), str(block.current_hash))
 
@@ -132,6 +132,8 @@ def write_to_db(wallet_address, block):
 
     with open(wallet_address + '/' + block.current_hash, 'wb') as f:
         pickle.dump(block, f)
+    
+    print("write to db")
 
 
 def get_block_hash(wallet_address, index):

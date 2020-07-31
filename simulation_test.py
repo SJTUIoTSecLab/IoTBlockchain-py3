@@ -16,10 +16,10 @@ def bootstrap(address, seeds):
         "seeds": seeds
     }
     req = urllib.request.Request("http://" + address + "/bootstrap",
-                          json.dumps(data),
+                          bytes(json.dumps(data),'utf8'),
                           {"Content-Type": "application/json"})
     res_data = urllib.request.urlopen(req)
-    res = res_data.read()
+    res = res_data.read().decode('utf8')
     return res
 
 
@@ -115,9 +115,9 @@ def simulate_tx(address, sender, receiver, amount):
     }
 
     req = urllib.request.Request(url="http://" + address + "/transactions/new",
-                          headers={"Content-Type": "application/json"}, data=json.dumps(data))
+                          headers={"Content-Type": "application/json"}, data=bytes(json.dumps(data),'utf8'))
     res_data = urllib.request.urlopen(req)
-    res = res_data.read()
+    res = res_data.read().decode('utf8')
     return res
 
 
@@ -126,7 +126,7 @@ def get_balance(address, wallet_addres):
                           headers={"Content-Type": "application/json"})
 
     res_data = urllib.request.urlopen(req)
-    res = res_data.read()
+    res = res_data.read().decode('utf8')
     return json.loads(res)
 
 
@@ -135,7 +135,7 @@ def get_node_info(address):
                           headers={"Content-Type": "application/json"})
 
     res_data = urllib.request.urlopen(req)
-    res = res_data.read()
+    res = res_data.read().decode('utf8')
     return json.loads(res)
 
 

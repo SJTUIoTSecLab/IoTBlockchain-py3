@@ -28,7 +28,7 @@ class Transaction(object):
     def get_txid(self):
         value = str(self.timestamp) + ",".join(str(txin) for txin in self.txins) + ",".join(
             str(txout) for txout in self.txouts)
-        sha = hashlib.sha256(value.encode('utf-8'))
+        sha = hashlib.sha256(value.encode('utf8'))
         return str(sha.hexdigest())
 
     def get_hash(self):
@@ -102,7 +102,7 @@ class TxOutput(object):
         """
 
         :param value: 一定量的货币
-        :param pubkey_hash: <str>，锁定脚本，要使用这个输出，必须要解锁该脚本。pubkey_hash=sha256(ripemd160(pubkey))
+        :param pubkey_hash: <str>，锁定脚本，要使用这个输出，必须要解锁该脚本。pubkey_hash=sha256(ripemd160(pubkey).encode('utf8'))
         """
         self.value = value
         self.pubkey_hash = pubkey_hash
@@ -124,7 +124,7 @@ class TxOutput(object):
     def lock(self, pubkey_hash):
         """
         锁定输出只有pubkey本人才能使用
-        :param pubkey_hash: <str>，锁定脚本，要使用这个输出，必须要解锁该脚本。pubkey_hash=sha256(ripemd160(pubkey))
+        :param pubkey_hash: <str>，锁定脚本，要使用这个输出，必须要解锁该脚本。pubkey_hash=sha256(ripemd160(pubkey).encode('utf8'))
         :return:
         """
         self.scriptPubKey = [OP_DUP, OP_HASH160, pubkey_hash, OP_EQUALVERIFY, OP_CHECKSIG]
@@ -145,3 +145,36 @@ class TxOutput(object):
             'scriptPubKey': [self.get_opcode_name(opcode) for opcode in self.scriptPubKey]
         }
         return output
+
+
+class Tx_vid(object):
+    def __init__(self, vid, timestamp):
+        """
+
+        :param txid: <str> 交易id
+        :param vid: <str> 车辆注册id
+        """
+        self.vid = vid
+        self.timestamp = timestamp
+        self.txid = self.get_txid()
+
+    def get_txid(self):
+        value = str(self.timestamp) + self.vid
+        sha = hashlib.sha256(value.encode('utf8'))
+        return str(sha.hexdigest())
+
+    def get_hash(self):
+        sha = hashlib.sha256(self.__str__().encode('utf-8'))
+        return sha.hexdigest()
+
+    def json_output(self):
+        output = {
+            'txid': self.txid,
+            'timestamp': self.timestamp,
+            'vid': self.vid
+        }
+        return output
+
+    def __str__(self):
+        return json.dumps(self.json_output(), default=lambda obj: obj.__dict__, sort_keys=True, indent=4)
+
