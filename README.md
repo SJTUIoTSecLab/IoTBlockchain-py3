@@ -16,28 +16,30 @@ python run.py -p 5001 &
 python run.py -p 5002 &
 ```
 
-### Step 2 : Simulate Trading
+### Step 2 : Simulate Transactions
 
-Run ```simulation_test.py``` ：
+Run ```simulation.py``` (need [SUMO](https://www.eclipse.org/sumo/) installed and configured):
 
 ```shell
-python simulation_test.py
+python simulation.py
 ```
+
+Transactions (Internet of Vehicles) is simulated.
 
 ### Step 3: Check Simple Information
 
 Open your browser and you can visit the following address to :
 
 - http://127.0.0.1:5001/height ：get the height of blockchain
-- http://127.0.0.1:5001/block_info?height=1 ：get the information of certain block
+- http://127.0.0.1:5001/tx_in_block?block_index=1：get the information of transactions in a certain block
 
-Or send a post request to the following address to:
+Or send a post request to the following address to :
 
-- http://127.0.0.1:5000/transactions/new ：create a new transaction
+- http://127.0.0.1:5000/transactions/new : create a new transaction
 
 ## Packaged App (Executable Files)
 
-Executable files have been packaged in ```/dist```. Start the nodes and simulate trading simply by execute :
+Executable files have been packaged in ```/dist``` (https://github.com/SJTUIoTSecLab/IoTBlockchain) . Start the nodes and simulate trading simply by execute :
 
 ```shell
 run -p 5000

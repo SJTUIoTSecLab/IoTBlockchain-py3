@@ -124,6 +124,6 @@ if __name__ == "__main__":
                 elif vid.startswith('c'):
                     print("new vehicle:", vid)
                     print("signed in rsu 3")
-                    simulate_tx("127.0.0.1:5002", vid) 
+                    simulate_tx("127.0.0.1:5002", vid)
             time.sleep(1)
     traci.close()

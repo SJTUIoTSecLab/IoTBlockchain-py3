@@ -12,7 +12,7 @@ from time import time
 
 def get_block_height(wallet_address):
     cf = configparser.ConfigParser()
-    cf.read(wallet_address + '/miniblockchain.conf')
+    cf.read(wallet_address + '/IoTBlockchain.conf')
     block_height = 1
     try:
         block_height = cf.get('meta', 'block_height')
@@ -29,7 +29,7 @@ def write_unconfirmed_tx_to_db(wallet_address, tx):
 
     # 写入到blockheader.db中
     cf = configparser.ConfigParser()
-    cf.read(wallet_address + '/miniblockchain.conf')
+    cf.read(wallet_address + '/IoTBlockchain.conf')
 
     unconfirmed_tx_counts = 0
     try:
@@ -47,7 +47,7 @@ def write_unconfirmed_tx_to_db(wallet_address, tx):
     cf.set('unconfirmed_tx_index', str(unconfirmed_tx_counts), str(tx.txid))
     cf.set('meta', 'unconfirmed_tx_counts', str(1 + int(unconfirmed_tx_counts)))
 
-    with open(wallet_address + '/miniblockchain.conf', 'w+') as f:
+    with open(wallet_address + '/IoTBlockchain.conf', 'w+') as f:
         cf.write(f)
 
     with open(wallet_address + '/unconfirmed_tx/' + tx.txid, 'wb') as f:
@@ -56,7 +56,7 @@ def write_unconfirmed_tx_to_db(wallet_address, tx):
 
 def get_all_unconfirmed_tx(wallet_address):
     cf = configparser.ConfigParser()
-    cf.read(wallet_address + '/miniblockchain.conf')
+    cf.read(wallet_address + '/IoTBlockchain.conf')
 
     tx_list = list()
     unconfirmed_tx_counts = 0
@@ -83,7 +83,7 @@ def get_tx_by_txid(wallet_address, txid):
 
 def clear_unconfirmed_tx_from_disk(wallet_address):
     cf = configparser.ConfigParser()
-    cf.read(wallet_address + '/miniblockchain.conf')
+    cf.read(wallet_address + '/IoTBlockchain.conf')
 
     unconfirmed_tx_counts = 0
     try:
@@ -101,7 +101,7 @@ def clear_unconfirmed_tx_from_disk(wallet_address):
     cf.remove_option('meta', 'unconfirmed_tx_counts')
     cf.remove_section('unconfirmed_tx_index')
 
-    with open(wallet_address + '/miniblockchain.conf', 'w+') as f:
+    with open(wallet_address + '/IoTBlockchain.conf', 'w+') as f:
         cf.write(f)
 
 
@@ -109,7 +109,7 @@ def write_to_db(wallet_address, block):
     if not os.path.isdir(wallet_address):
         os.mkdir(wallet_address)
     cf = configparser.ConfigParser()
-    cf.read(wallet_address + '/miniblockchain.conf')
+    cf.read(wallet_address + '/IoTBlockchain.conf')
 
     block_height = "1"
     try:
@@ -127,7 +127,7 @@ def write_to_db(wallet_address, block):
 
     cf.set('index', str(block.index), str(block.current_hash))
 
-    with open(wallet_address + '/miniblockchain.conf', 'w+') as f:
+    with open(wallet_address + '/IoTBlockchain.conf', 'w+') as f:
         cf.write(f)
 
     with open(wallet_address + '/' + block.current_hash, 'wb') as f:
@@ -138,7 +138,7 @@ def write_to_db(wallet_address, block):
 
 def get_block_hash(wallet_address, index):
     cf = configparser.ConfigParser()
-    cf.read(wallet_address + '/miniblockchain.conf')
+    cf.read(wallet_address + '/IoTBlockchain.conf')
 
     block_hash = None
     try:

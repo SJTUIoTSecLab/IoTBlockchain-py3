@@ -217,6 +217,26 @@ def tx_info():
     return 'not exist!', 200
 
 
+@app.route('/tx_in_block', methods=['GET'])
+def tx_in_block():
+    values = request.get_json()
+
+    block_index = int(request.args.get('block_index'))
+
+    block = db.get_block_data_by_index(blockchain.wallet.address, block_index)
+    tmp = dict()
+    cnt = 0
+    for tx in block.transactions:
+        tmp[str(cnt)] = {
+            'txid': tx.txid,
+            'timestamp': time.strftime("%Y-%m-%d %H:%M:%S",time.localtime(tx.timestamp)),
+            'vid': tx.vid
+        }
+        cnt += 1
+    
+    return json.dumps(tmp), 200
+
+
 @app.route('/unconfirm_tx_info', methods=['GET'])
 def unconfirm_tx_info():
     txid = request.args.get('txid')
