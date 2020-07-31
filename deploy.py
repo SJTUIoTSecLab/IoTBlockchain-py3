@@ -15,7 +15,6 @@ from script import Script, get_address_from_ripemd160
 from wallet import Wallet
 
 node_list = []
-expectedClientNum = 4
 defaultPort = 30134
 serverIP = "121.36.95.93"
 serverAddress = "121.36.95.93:30134"
@@ -77,10 +76,9 @@ def start_simulation():
         print(seed_list)
         bootstrap(str(node["ip"]) + ":" + str(node["port"]), seed_list)
 
-    print()
-    "ok"
+    print("ok")
 
-    node_manager.start();
+    node_manager.start()
 
     time.sleep(1)
 
@@ -100,7 +98,7 @@ def start_simulation():
             amount = random.randint(1, node1_balance) / 10
             print('send from node1 to node2 with amount:' + str(amount))
             simulate_tx(node1_address, node1_wallet, node2_wallet, amount)
-            time.sleep(random.randint(4, 5))
+            time.sleep(random.random())
 
         node1_balance = get_balance(node1_address, node1_wallet)
         node1_balance = node1_balance['balance']
@@ -108,7 +106,7 @@ def start_simulation():
             amount = random.randint(1, node1_balance) / 10
             print('send from node1 to node3 with amount:' + str(amount))
             simulate_tx(node1_address, node1_wallet, node3_wallet, amount)
-            time.sleep(random.randint(4, 5))
+            time.sleep(random.random())
 
         # node2 发送给node1 node3
         node2_balance = get_balance(node2_address, node2_wallet)
@@ -117,7 +115,7 @@ def start_simulation():
             amount = random.randint(1, node2_balance) / 10
             print('send from node2 to node1 with amount:' + str(amount))
             simulate_tx(node2_address, node2_wallet, node1_wallet, amount)
-            time.sleep(random.randint(4, 5))
+            time.sleep(random.random())
 
         node2_balance = get_balance(node2_address, node2_wallet)
         node2_balance = node2_balance['balance']
@@ -125,7 +123,7 @@ def start_simulation():
             amount = random.randint(1, node2_balance) / 10
             print('send from node2 to node3 with amount:' + str(amount))
             simulate_tx(node2_address, node2_wallet, node3_wallet, amount)
-            time.sleep(random.randint(4, 5))
+            time.sleep(random.random())
         #
         # node3 发送给node1 node2
         node3_balance = get_balance(node3_address, node3_wallet)
@@ -134,7 +132,7 @@ def start_simulation():
             amount = random.randint(1, node3_balance) / 10
             print('send from node3 to node1 with amount:' + str(amount))
             simulate_tx(node3_address, node3_wallet, node1_wallet, amount)
-            time.sleep(random.randint(4, 5))
+            time.sleep(random.random())
 
         node3_balance = get_balance(node3_address, node3_wallet)
         node3_balance = node3_balance['balance']
@@ -142,8 +140,8 @@ def start_simulation():
             amount = random.randint(1, node3_balance) / 10
             print('send from node3 to node2 with amount:' + str(amount))
             simulate_tx(node3_address, node3_wallet, node2_wallet, amount)
-            time.sleep(random.randint(4, 5))
-        time.sleep(5)
+            time.sleep(random.random())
+        time.sleep(10)
 
 
 def simulate_tx(address, sender, receiver, amount):
@@ -191,7 +189,7 @@ def bootstrap_app():
     output = json.dumps(all_nodes, default=lambda obj: obj.__dict__, indent=4)
 
     if not node_manager.is_primary:
-        node_manager.start();
+        node_manager.start()
 
     return output, 200
 
@@ -207,17 +205,6 @@ def curr_node_app():
     }
     output = json.dumps(output, default=lambda obj: obj.__dict__, indent=4)
     return output, 200
-
-
-
-# @app.route('/chain', methods=['GET'])
-# def full_chain():
-#     output = {
-#         'length': db.get_block_height(blockchain.wallet.address),
-#         'chain': blockchain.json_output(),
-#     }
-#     json_output = json.dumps(output, indent=4)
-#     return json_output, 200
 
 
 @app.route('/transactions/new', methods=['POST'])
@@ -411,8 +398,10 @@ if __name__ == '__main__':
 
     parser = ArgumentParser()
     parser.add_argument('-s', action='store_true')
+    parser.add_argument('-n', default=4, type=int, help='number of expected nodes')
     args = parser.parse_args()
     isServer = args.s
+    expectedClientNum = args.n
 
     if isServer:
 
@@ -439,17 +428,16 @@ if __name__ == '__main__':
 
     else:
 
-        port = randint(30000, 31000)
+        lport = randint(30000, 31000)
 
-        node_manager = NodeManager('0.0.0.0', port, isServer, True)
+        node_manager = NodeManager('0.0.0.0', lport, isServer, True)
         blockchain = node_manager.blockchain
 
         print("Wallet address: %s" % blockchain.get_wallet_address())
 
-        thread = threading.Thread(target=app.run, args=('0.0.0.0', port))
+        thread = threading.Thread(target=app.run, args=('0.0.0.0', lport))
         thread.setDaemon(True)
         thread.start()
 
         time.sleep(1)
         client_hello()
-        thread.join()

@@ -772,11 +772,13 @@ class NodeManager(object):
 
     def minner(self):
         member_index = 0
+
+        time.sleep(30)
+
         while True:
             # blockchain多个线程共享使用，需要加锁
             
             if self.view == 0 and self.is_primary and self.expectedClientNum * 2 // 3 < len(self.committee_member):
-                time.sleep(10)
                 print("-------START--------")
                 self.sendrequest(0)
                 # first = False
@@ -813,7 +815,7 @@ class NodeManager(object):
                     msg_bytes = pickle.dumps(msg_obj)
                     self.client.sendoff(self.server.socket, (node.ip, node.port), msg_bytes)
 
-            time.sleep(1)
+            time.sleep(.1)
             
             # if self.is_primary:
             #     print "request"
