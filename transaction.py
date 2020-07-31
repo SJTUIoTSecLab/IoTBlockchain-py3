@@ -145,3 +145,36 @@ class TxOutput(object):
             'scriptPubKey': [self.get_opcode_name(opcode) for opcode in self.scriptPubKey]
         }
         return output
+
+
+class Tx_vid(object):
+    def __init__(self, vid, timestamp):
+        """
+
+        :param txid: <str> 交易id
+        :param vid: <str> 车辆注册id
+        """
+        self.vid = vid
+        self.timestamp = timestamp
+        self.txid = self.get_txid()
+
+    def get_txid(self):
+        value = str(self.timestamp) + self.vid
+        sha = hashlib.sha256(value.encode('utf8'))
+        return str(sha.hexdigest())
+
+    def get_hash(self):
+        sha = hashlib.sha256(self.__str__().encode('utf-8'))
+        return sha.hexdigest()
+
+    def json_output(self):
+        output = {
+            'txid': self.txid,
+            'timestamp': self.timestamp,
+            'vid': self.vid
+        }
+        return output
+
+    def __str__(self):
+        return json.dumps(self.json_output(), default=lambda obj: obj.__dict__, sort_keys=True, indent=4)
+

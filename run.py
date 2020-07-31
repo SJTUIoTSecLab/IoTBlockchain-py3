@@ -142,6 +142,29 @@ def new_transaction():
         return jsonify(response), 200
 
 
+@app.route('/transactions/new_vid', methods=['POST'])
+def new_vid_transaction():
+    values = request.get_json()
+    required = ['vid']
+    if not all(k in values for k in required):
+        return 'Missing values', 400
+
+    # Create a new Transaction
+    new_tx = blockchain.new_vid_transaction(values['vid'])
+
+    if new_tx:
+        output = {
+            'message': 'new transaction been created successfully!',
+            'received_transactions': [tx.json_output() for tx in blockchain.received_transactions]
+        }
+        json_output = json.dumps(output, indent=4)
+        return json_output, 200
+
+    else:
+        response = {'message': "Not enough funds!"}
+        return jsonify(response), 200
+
+
 @app.route('/balance', methods=['GET'])
 def get_balance():
     address = request.args.get('address')
@@ -318,7 +341,7 @@ if __name__ == '__main__':
     else:
         genisus_node = False
 
-    node_manager = NodeManager('localhost', 0, genisus_node, True)
+    node_manager = NodeManager('localhost', 0, genisus_node, True, 2)
     blockchain = node_manager.blockchain
 
     print("Wallet address: %s" % blockchain.get_wallet_address())
