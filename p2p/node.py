@@ -579,7 +579,7 @@ class NodeManager(object):
         self.blockcache = Block(0,0,0,0,0,4)
         self.primary_node_address = self.address
         self.replyMessage = 0
-        self.GST = 10
+        self.GST = 0.5
         self.replyflag = False
         self.finishflag = False #是否收到法定个哈希并sendreply
         self.successflag = False
@@ -777,10 +777,10 @@ class NodeManager(object):
             # blockchain多个线程共享使用，需要加锁
             
             if self.view == 0 and self.is_primary and self.expectedClientNum * 2 // 3 < len(self.committee_member):
-                time.sleep(20) # 用 run + simulation 运行时根据节点数量设置相应大的等待时间
-                print("-------START--------")
-                self.sendrequest(0)
-                # first = False
+                # time.sleep(30) # 用 run + simulation 运行时根据节点数量设置相应大的等待时间
+                if self.blockchain.received_transactions:
+                    print("-------START--------")
+                    self.sendrequest(0)
 
             if not (not self.startflag or self.receivealltx < len(self.committee_member) or
                     int(time.time()) <= self.maxTime or self.expectedClientNum * 2 // 3 >= len(self.committee_member)):

@@ -1,0 +1,484 @@
+127.0.0.1 - - [01/Aug/2020 16:43:46] "POST /transactions/new_vid HTTP/1.1" 200 -
+------handle alltx------
+sendalltx to  ('localhost', 64508)
++++++an alltx added,the transaction now:+++++
+send tx: 5
+received tx: 6
+current tx: 14
++++++an alltx added,the transaction now:+++++
+send tx: 5
+received tx: 6
+current tx: 14
++++++an alltx added,the transaction now:+++++
+send tx: 5
+------handle alltx------
+received tx: 6
+127.0.0.1 - - [01/Aug/2020 16:43:46] "POST /transactions/new_report HTTP/1.1" 200 -
+------handle alltx------
+current tx: 14
++++++an alltx added,the transaction now:+++++
+send tx: 5
+received tx: 7
+current tx: 14
++++++an alltx added,the transaction now:+++++
+send tx: 5
+received tx: 7
+current tx: 14
++++++an alltx added,the transaction now:+++++
+send tx: 5
+received tx: 7
+current tx: 16
+------handle blockhash: the start of reply------
++++++commitMessage now:+++++
+['ebbd7e82208e0bf5a281c6d0b196aa2be5d3e41c50731978bf248b9ded37caf6']
+------handle blockhash: the start of reply------
++++++commitMessage now:+++++
+['ebbd7e82208e0bf5a281c6d0b196aa2be5d3e41c50731978bf248b9ded37caf6', '041486413bf593826a4ca46eb6c620409d3a4898b510f54158897152d58816f8']    
+------handle blockhash: the start of reply------
++++++commitMessage now:+++++
+['ebbd7e82208e0bf5a281c6d0b196aa2be5d3e41c50731978bf248b9ded37caf6', '041486413bf593826a4ca46eb6c620409d3a4898b510f54158897152d58816f8', '041486413bf593826a4ca46eb6c620409d3a4898b510f54158897152d58816f8']
+-------collected enough tx: the start of commit-------
+current: 16
+before merkle:
+current tx: 16
+received tx: 7
+send tx: 5
+[<transaction.Tx_vid object at 0x00000210E9B65640>, <transaction.Tx_vid object at 0x00000210E9BB2970>, <transaction.Tx_report object at 0x00000210E9BB44F0>, <transaction.Tx_vid object at 0x00000210E9BB4BB0>, <transaction.Tx_report object at 0x00000210E9BB4D90>, <transaction.Tx_report object at 0x00000210E9BB4CD0>, <transaction.Tx_report object at 0x00000210E9BAA250>, <transaction.Tx_report object at 0x00000210E9BAB0A0>, <transaction.Tx_report object at 0x00000210E9BB4DF0>, <transaction.Tx_report object at 0x00000210E9BABA30>, <transaction.Tx_vid object at 0x00000210E9BB4C10>, <transaction.Tx_vid object at 0x00000210E9BB2190>, <transaction.Tx_vid object at 0x00000210E9BB4C70>, <transaction.Tx_vid object at 0x00000210E9BB4D30>, <transaction.Tx_vid object at 0x00000210E9BB4B50>, <transaction.Tx_report object at 0x00000210E9BB4220>]
+new block found
+------send blockhash: the end of commit------
+127.0.0.1 - - [01/Aug/2020 16:43:46] "POST /transactions/new_report HTTP/1.1" 200 -
+------handle blockhash: the start of reply------
++++++commitMessage now:+++++
+['ebbd7e82208e0bf5a281c6d0b196aa2be5d3e41c50731978bf248b9ded37caf6', '041486413bf593826a4ca46eb6c620409d3a4898b510f54158897152d58816f8', '041486413bf593826a4ca46eb6c620409d3a4898b510f54158897152d58816f8', '041486413bf593826a4ca46eb6c620409d3a4898b510f54158897152d58816f8']        
+------handle blockhash: the start of reply------
++++++commitMessage now:+++++
+['ebbd7e82208e0bf5a281c6d0b196aa2be5d3e41c50731978bf248b9ded37caf6', '041486413bf593826a4ca46eb6c620409d3a4898b510f54158897152d58816f8', '041486413bf593826a4ca46eb6c620409d3a4898b510f54158897152d58816f8', '041486413bf593826a4ca46eb6c620409d3a4898b510f54158897152d58816f8', '041486413bf593826a4ca46eb6c620409d3a4898b510f54158897152d58816f8']
+------handle blockhash: the start of reply------
++++++commitMessage now:+++++
+['ebbd7e82208e0bf5a281c6d0b196aa2be5d3e41c50731978bf248b9ded37caf6', '041486413bf593826a4ca46eb6c620409d3a4898b510f54158897152d58816f8', '041486413bf593826a4ca46eb6c620409d3a4898b510f54158897152d58816f8', '041486413bf593826a4ca46eb6c620409d3a4898b510f54158897152d58816f8', '041486413bf593826a4ca46eb6c620409d3a4898b510f54158897152d58816f8', '041486413bf593826a4ca46eb6c620409d3a4898b510f54158897152d58816f8']
+127.0.0.1 - - [01/Aug/2020 16:43:46] "POST /transactions/new_report HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2020 16:43:46] "POST /transactions/new_report HTTP/1.1" 200 -
+------handle blockhash: the start of reply------
++++++commitMessage now:+++++
+['ebbd7e82208e0bf5a281c6d0b196aa2be5d3e41c50731978bf248b9ded37caf6', '041486413bf593826a4ca46eb6c620409d3a4898b510f54158897152d58816f8', '041486413bf593826a4ca46eb6c620409d3a4898b510f54158897152d58816f8', '041486413bf593826a4ca46eb6c620409d3a4898b510f54158897152d58816f8', '041486413bf593826a4ca46eb6c620409d3a4898b510f54158897152d58816f8', '041486413bf593826a4ca46eb6c620409d3a4898b510f54158897152d58816f8', '041486413bf593826a4ca46eb6c620409d3a4898b510f54158897152d58816f8']
+------handle reply: the start of pre-prepare------
+------handle reply: the start of pre-prepare------
+------handle blockhash: the start of reply------
++++++commitMessage now:+++++
+['ebbd7e82208e0bf5a281c6d0b196aa2be5d3e41c50731978bf248b9ded37caf6', '041486413bf593826a4ca46eb6c620409d3a4898b510f54158897152d58816f8', '041486413bf593826a4ca46eb6c620409d3a4898b510f54158897152d58816f8', '041486413bf593826a4ca46eb6c620409d3a4898b510f54158897152d58816f8', '041486413bf593826a4ca46eb6c620409d3a4898b510f54158897152d58816f8', '041486413bf593826a4ca46eb6c620409d3a4898b510f54158897152d58816f8', '041486413bf593826a4ca46eb6c620409d3a4898b510f54158897152d58816f8', '041486413bf593826a4ca46eb6c620409d3a4898b510f54158897152d58816f8']
+-------------------I am correct!!!!!!!!--------------------
+------send reply: the end of reply------
+primary_node_address:
+('localhost', 64501)
+------handle request: the start of prepare------
+the hash of last view:
+041486413bf593826a4ca46eb6c620409d3a4898b510f54158897152d58816f8
+write to db
+view: 9
+the tx we want to send:
+[<transaction.Tx_vid object at 0x00000210E9B7BD60>, <transaction.Tx_report object at 0x00000210E9BA2B80>, <transaction.Tx_report object at 0x00000210E9BBB1C0>, <transaction.Tx_report object at 0x00000210E9BBB130>, <transaction.Tx_report object at 0x00000210E9BBB1F0>]
+------handle alltx------
+------send alltx: the end of prepare------
++++++an alltx added,the transaction now:+++++
+sendalltx to  ('localhost', 64506)
+------handle alltx------
+------handle alltx------
+send tx: 5
+sendalltx to  ('localhost', 64505)
+received tx: 5
+------handle alltx------
+current tx: 0
+sendalltx to  ('localhost', 64504)
++++++an alltx added,the transaction now:+++++
+sendalltx to  ('localhost', 64503)
+send tx: 5
+sendalltx to  ('localhost', 64502)
+received tx: 5
+current tx: 5
+sendalltx to  ('localhost', 64501)
++++++an alltx added,the transaction now:+++++
+sendalltx to  ('localhost', 64500)
+send tx: 5
+received tx: 5
+sendalltx to  ('localhost', 49152)
+current tx: 5
+------handle alltx------
+sendalltx to  ('localhost', 64508)
++++++an alltx added,the transaction now:+++++
+------handle alltx------
+send tx: 5
+------handle alltx------
+received tx: 5
+------handle alltx------
+current tx: 10
++++++an alltx added,the transaction now:+++++
+send tx: 5
+received tx: 5
+current tx: 10
++++++an alltx added,the transaction now:+++++
+127.0.0.1 - - [01/Aug/2020 16:43:47] "POST /transactions/new_report HTTP/1.1" 200 -
+send tx: 5
+received tx: 6
+current tx: 10
++++++an alltx added,the transaction now:+++++
+send tx: 5
+received tx: 6
+current tx: 11
++++++an alltx added,the transaction now:+++++
+send tx: 5
+received tx: 6
+current tx: 11
+------handle alltx------
++++++an alltx added,the transaction now:+++++
+send tx: 5
+received tx: 6
+current tx: 11
+127.0.0.1 - - [01/Aug/2020 16:43:47] "POST /transactions/new_vid HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2020 16:43:47] "POST /transactions/new_report HTTP/1.1" 200 -
+------handle blockhash: the start of reply------
++++++commitMessage now:+++++
+['5836ee009b75c590f0c9e4d306c60d393566c4deeef0447b0da2d3ef044e634b']
+127.0.0.1 - - [01/Aug/2020 16:43:47] "POST /transactions/new_vid HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2020 16:43:47] "POST /transactions/new_vid HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2020 16:43:47] "POST /transactions/new_report HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2020 16:43:47] "POST /transactions/new_vid HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2020 16:43:47] "POST /transactions/new_vid HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2020 16:43:47] "POST /transactions/new_report HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2020 16:43:47] "POST /transactions/new_vid HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2020 16:43:47] "POST /transactions/new_vid HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2020 16:43:47] "POST /transactions/new_report HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2020 16:43:48] "POST /transactions/new_report HTTP/1.1" 200 -
+------handle blockhash: the start of reply------
++++++commitMessage now:+++++
+['5836ee009b75c590f0c9e4d306c60d393566c4deeef0447b0da2d3ef044e634b', 'a5c36a8616d45c598019b45daa96a0b32375183aefcb4581e34470002bcc062e']    
+------handle blockhash: the start of reply------
++++++commitMessage now:+++++
+['5836ee009b75c590f0c9e4d306c60d393566c4deeef0447b0da2d3ef044e634b', 'a5c36a8616d45c598019b45daa96a0b32375183aefcb4581e34470002bcc062e', '5836ee009b75c590f0c9e4d306c60d393566c4deeef0447b0da2d3ef044e634b']
+------handle blockhash: the start of reply------
++++++commitMessage now:+++++
+['5836ee009b75c590f0c9e4d306c60d393566c4deeef0447b0da2d3ef044e634b', 'a5c36a8616d45c598019b45daa96a0b32375183aefcb4581e34470002bcc062e', '5836ee009b75c590f0c9e4d306c60d393566c4deeef0447b0da2d3ef044e634b', '5836ee009b75c590f0c9e4d306c60d393566c4deeef0447b0da2d3ef044e634b']        
+-------collected enough tx: the start of commit-------
+current: 11
+before merkle:
+current tx: 11
+received tx: 18
+send tx: 5
+[<transaction.Tx_vid object at 0x00000210E9BBAE80>, <transaction.Tx_report object at 0x00000210E9BBBB50>, <transaction.Tx_report object at 0x00000210E9BBB1F0>, <transaction.Tx_vid object at 0x00000210E9B7BD60>, <transaction.Tx_report object at 0x00000210E9BBB130>, <transaction.Tx_vid object at 0x00000210E9BBBC70>, <transaction.Tx_report object at 0x00000210E9BBB1C0>, <transaction.Tx_report object at 0x00000210E9BBBC10>, <transaction.Tx_report object at 0x00000210E9BBBBB0>, <transaction.Tx_report object at 0x00000210E9BBBCD0>, <transaction.Tx_report object at 0x00000210E9BA2B80>]
+new block found
+------send blockhash: the end of commit------
+127.0.0.1 - - [01/Aug/2020 16:43:48] "POST /transactions/new_report HTTP/1.1" 200 -
+------handle blockhash: the start of reply------
++++++commitMessage now:+++++
+['5836ee009b75c590f0c9e4d306c60d393566c4deeef0447b0da2d3ef044e634b', 'a5c36a8616d45c598019b45daa96a0b32375183aefcb4581e34470002bcc062e', '5836ee009b75c590f0c9e4d306c60d393566c4deeef0447b0da2d3ef044e634b', '5836ee009b75c590f0c9e4d306c60d393566c4deeef0447b0da2d3ef044e634b', '5836ee009b75c590f0c9e4d306c60d393566c4deeef0447b0da2d3ef044e634b']
+------handle blockhash: the start of reply------
++++++commitMessage now:+++++
+['5836ee009b75c590f0c9e4d306c60d393566c4deeef0447b0da2d3ef044e634b', 'a5c36a8616d45c598019b45daa96a0b32375183aefcb4581e34470002bcc062e', '5836ee009b75c590f0c9e4d306c60d393566c4deeef0447b0da2d3ef044e634b', '5836ee009b75c590f0c9e4d306c60d393566c4deeef0447b0da2d3ef044e634b', '5836ee009b75c590f0c9e4d306c60d393566c4deeef0447b0da2d3ef044e634b', '5836ee009b75c590f0c9e4d306c60d393566c4deeef0447b0da2d3ef044e634b']
+127.0.0.1 - - [01/Aug/2020 16:43:48] "POST /transactions/new_vid HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2020 16:43:48] "POST /transactions/new_report HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2020 16:43:48] "POST /transactions/new_report HTTP/1.1" 200 -
+------handle blockhash: the start of reply------
++++++commitMessage now:+++++
+['5836ee009b75c590f0c9e4d306c60d393566c4deeef0447b0da2d3ef044e634b', 'a5c36a8616d45c598019b45daa96a0b32375183aefcb4581e34470002bcc062e', '5836ee009b75c590f0c9e4d306c60d393566c4deeef0447b0da2d3ef044e634b', '5836ee009b75c590f0c9e4d306c60d393566c4deeef0447b0da2d3ef044e634b', '5836ee009b75c590f0c9e4d306c60d393566c4deeef0447b0da2d3ef044e634b', '5836ee009b75c590f0c9e4d306c60d393566c4deeef0447b0da2d3ef044e634b', '5836ee009b75c590f0c9e4d306c60d393566c4deeef0447b0da2d3ef044e634b']
+------handle reply: the start of pre-prepare------
+------handle blockhash: the start of reply------
++++++commitMessage now:+++++
+['5836ee009b75c590f0c9e4d306c60d393566c4deeef0447b0da2d3ef044e634b', 'a5c36a8616d45c598019b45daa96a0b32375183aefcb4581e34470002bcc062e', '5836ee009b75c590f0c9e4d306c60d393566c4deeef0447b0da2d3ef044e634b', '5836ee009b75c590f0c9e4d306c60d393566c4deeef0447b0da2d3ef044e634b', '5836ee009b75c590f0c9e4d306c60d393566c4deeef0447b0da2d3ef044e634b', '5836ee009b75c590f0c9e4d306c60d393566c4deeef0447b0da2d3ef044e634b', '5836ee009b75c590f0c9e4d306c60d393566c4deeef0447b0da2d3ef044e634b', '5836ee009b75c590f0c9e4d306c60d393566c4deeef0447b0da2d3ef044e634b']
+-------------------I am correct!!!!!!!!--------------------
+------send reply: the end of reply------
+primary_node_address:
+('localhost', 64500)
+------handle request: the start of prepare------
+the hash of last view:
+5836ee009b75c590f0c9e4d306c60d393566c4deeef0447b0da2d3ef044e634b
+write to db
+view: 10
+the tx we want to send:
+[<transaction.Tx_report object at 0x00000210E9BB4D00>, <transaction.Tx_vid object at 0x00000210E9BB4DF0>, <transaction.Tx_report object at 0x00000210E9BB4250>, <transaction.Tx_vid object at 0x00000210E9BB4CA0>, <transaction.Tx_vid object at 0x00000210E9BB4220>, <transaction.Tx_report object at 0x00000210E9B6EDC0>, <transaction.Tx_vid object at 0x00000210E9BB2A30>, <transaction.Tx_vid object at 0x00000210E9BB2250>, <transaction.Tx_report object at 0x00000210E9BB23A0>, <transaction.Tx_vid object at 0x00000210E9BB2430>, <transaction.Tx_vid object at 0x00000210E9BB2070>, <transaction.Tx_report object at 0x00000210E9BB26A0>, <transaction.Tx_report object at 0x00000210E9BB2F40>, <transaction.Tx_report object at 0x00000210E9BB2040>, <transaction.Tx_vid object at 0x00000210E9BB2940>, <transaction.Tx_report object at 0x00000210E9BB2490>, <transaction.Tx_report object at 0x00000210E9BB2760>]
+------send alltx: the end of prepare------
+------handle alltx------
+sendalltx to  ('localhost', 64506)
++++++an alltx added,the transaction now:+++++
+sendalltx to  ('localhost', 64505)
+127.0.0.1 - - [01/Aug/2020 16:43:48] "POST /transactions/new_vid HTTP/1.1" 200 -
+send tx: 17
+------handle alltx------
+sendalltx to  ('localhost', 64504)
+------handle alltx------
+received tx: 18
+sendalltx to  ('localhost', 64503)
+current tx: 0
+sendalltx to  ('localhost', 64502)
++++++an alltx added,the transaction now:+++++
+sendalltx to  ('localhost', 64501)
+send tx: 17
+127.0.0.1 - - [01/Aug/2020 16:43:49] "POST /transactions/new_report HTTP/1.1" 200 -
+------handle alltx------
+received tx: 19
+------handle alltx------
+------handle alltx------
+sendalltx to  ('localhost', 64500)
+current tx: 0
+------handle alltx------
+sendalltx to  ('localhost', 49152)
++++++an alltx added,the transaction now:+++++
+------handle alltx------
+send tx: 17
+sendalltx to  ('localhost', 64508)
+received tx: 19
+------handle blockhash: the start of reply------
+current tx: 30
++++++commitMessage now:+++++
++++++an alltx added,the transaction now:+++++
+['f45cf8d941558a5603eeecaa67e64b9e1daf85017163f02db54d34dc820e6a76']
+send tx: 17
+------handle alltx------
+received tx: 19
+current tx: 30
++++++an alltx added,the transaction now:+++++
+send tx: 17
+received tx: 19
+current tx: 30
++++++an alltx added,the transaction now:+++++
+send tx: 17
+received tx: 19
+current tx: 30
++++++an alltx added,the transaction now:+++++
+send tx: 17
+received tx: 19
+current tx: 31
++++++an alltx added,the transaction now:+++++
+send tx: 17
+received tx: 19
+current tx: 31
++++++an alltx added,the transaction now:+++++
+send tx: 17
+received tx: 19
+current tx: 31
+127.0.0.1 - - [01/Aug/2020 16:43:49] "POST /transactions/new_report HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2020 16:43:49] "POST /transactions/new_report HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2020 16:43:49] "POST /transactions/new_report HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2020 16:43:49] "POST /transactions/new_report HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2020 16:43:50] "POST /transactions/new_vid HTTP/1.1" 200 -
+------handle blockhash: the start of reply------
++++++commitMessage now:+++++
+['f45cf8d941558a5603eeecaa67e64b9e1daf85017163f02db54d34dc820e6a76', '6ce95bc8d6231b4d587ad8d41ccd13ef3b3f67c2f4acc2e39e8490df84883d38']    
+127.0.0.1 - - [01/Aug/2020 16:43:50] "POST /transactions/new_vid HTTP/1.1" 200 -
+------handle blockhash: the start of reply------
++++++commitMessage now:+++++
+['f45cf8d941558a5603eeecaa67e64b9e1daf85017163f02db54d34dc820e6a76', '6ce95bc8d6231b4d587ad8d41ccd13ef3b3f67c2f4acc2e39e8490df84883d38', '1fb99f98084c6c80e486cc43b7defd7629f5baa17cc9d789f054b443fd8fd639']
+127.0.0.1 - - [01/Aug/2020 16:43:50] "POST /transactions/new_report HTTP/1.1" 200 -
+------handle blockhash: the start of reply------
++++++commitMessage now:+++++
+['f45cf8d941558a5603eeecaa67e64b9e1daf85017163f02db54d34dc820e6a76', '6ce95bc8d6231b4d587ad8d41ccd13ef3b3f67c2f4acc2e39e8490df84883d38', '1fb99f98084c6c80e486cc43b7defd7629f5baa17cc9d789f054b443fd8fd639', '1fb99f98084c6c80e486cc43b7defd7629f5baa17cc9d789f054b443fd8fd639']        
+------handle blockhash: the start of reply------
++++++commitMessage now:+++++
+['f45cf8d941558a5603eeecaa67e64b9e1daf85017163f02db54d34dc820e6a76', '6ce95bc8d6231b4d587ad8d41ccd13ef3b3f67c2f4acc2e39e8490df84883d38', '1fb99f98084c6c80e486cc43b7defd7629f5baa17cc9d789f054b443fd8fd639', '1fb99f98084c6c80e486cc43b7defd7629f5baa17cc9d789f054b443fd8fd639', '1fb99f98084c6c80e486cc43b7defd7629f5baa17cc9d789f054b443fd8fd639']
+-------collected enough tx: the start of commit-------
+current: 31
+before merkle:
+current tx: 31
+received tx: 26
+send tx: 17
+[<transaction.Tx_vid object at 0x00000210E9BBA520>, <transaction.Tx_vid object at 0x00000210E9BBB820>, <transaction.Tx_report object at 0x00000210E9B6EDC0>, <transaction.Tx_report object at 0x00000210E9BB4250>, <transaction.Tx_vid object at 0x00000210E9BB2A30>, <transaction.Tx_report object at 0x00000210E9BBB0D0>, <transaction.Tx_vid object at 0x00000210E9BB2250>, <transaction.Tx_report object at 0x00000210E9BB26A0>, <transaction.Tx_report object at 0x00000210E9BB4D00>, <transaction.Tx_vid object at 0x00000210E9BB4CA0>, <transaction.Tx_vid object at 0x00000210E9BB2430>, <transaction.Tx_report object at 0x00000210E9BBB040>, <transaction.Tx_report object at 0x00000210E9BB23A0>, <transaction.Tx_vid object at 0x00000210E9BB4220>, <transaction.Tx_report object at 0x00000210E9BBFE20>, <transaction.Tx_vid object at 0x00000210E9BB2070>, <transaction.Tx_vid object at 0x00000210E9BB4DF0>, <transaction.Tx_report object at 0x00000210E9BBFBB0>, <transaction.Tx_report object at 0x00000210E9BBFFA0>, <transaction.Tx_vid object at 0x00000210E9BBFDF0>, <transaction.Tx_vid object at 0x00000210E9BD00D0>, <transaction.Tx_report object at 0x00000210E9BCC220>, <transaction.Tx_report object at 0x00000210E9BB2490>, <transaction.Tx_report object at 0x00000210E9BB2040>, <transaction.Tx_vid object at 0x00000210E9BB2940>, <transaction.Tx_report object at 0x00000210E9BB2F40>, <transaction.Tx_report object at 0x00000210E9BCC280>, <transaction.Tx_report object at 0x00000210E9BCC070>, <transaction.Tx_report object at 0x00000210E9BB2760>, <transaction.Tx_report object at 0x00000210E9BCC2E0>, <transaction.Tx_vid object at 0x00000210E9BCC340>]
+new block found
+------send blockhash: the end of commit------
+127.0.0.1 - - [01/Aug/2020 16:43:50] "POST /transactions/new_vid HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2020 16:43:50] "POST /transactions/new_report HTTP/1.1" 200 -
+------handle blockhash: the start of reply------
++++++commitMessage now:+++++
+------handle blockhash: the start of reply------
+['f45cf8d941558a5603eeecaa67e64b9e1daf85017163f02db54d34dc820e6a76', '6ce95bc8d6231b4d587ad8d41ccd13ef3b3f67c2f4acc2e39e8490df84883d38', '1fb99f98084c6c80e486cc43b7defd7629f5baa17cc9d789f054b443fd8fd639', '1fb99f98084c6c80e486cc43b7defd7629f5baa17cc9d789f054b443fd8fd639', '1fb99f98084c6c80e486cc43b7defd7629f5baa17cc9d789f054b443fd8fd639', '1fb99f98084c6c80e486cc43b7defd7629f5baa17cc9d789f054b443fd8fd639']
++++++commitMessage now:+++++
+['f45cf8d941558a5603eeecaa67e64b9e1daf85017163f02db54d34dc820e6a76', '6ce95bc8d6231b4d587ad8d41ccd13ef3b3f67c2f4acc2e39e8490df84883d38', '1fb99f98084c6c80e486cc43b7defd7629f5baa17cc9d789f054b443fd8fd639', '1fb99f98084c6c80e486cc43b7defd7629f5baa17cc9d789f054b443fd8fd639', '1fb99f98084c6c80e486cc43b7defd7629f5baa17cc9d789f054b443fd8fd639', '1fb99f98084c6c80e486cc43b7defd7629f5baa17cc9d789f054b443fd8fd639', '1fb99f98084c6c80e486cc43b7defd7629f5baa17cc9d789f054b443fd8fd639']
+------handle blockhash: the start of reply------
++++++commitMessage now:+++++
+['f45cf8d941558a5603eeecaa67e64b9e1daf85017163f02db54d34dc820e6a76', '6ce95bc8d6231b4d587ad8d41ccd13ef3b3f67c2f4acc2e39e8490df84883d38', '1fb99f98084c6c80e486cc43b7defd7629f5baa17cc9d789f054b443fd8fd639', '1fb99f98084c6c80e486cc43b7defd7629f5baa17cc9d789f054b443fd8fd639', '1fb99f98084c6c80e486cc43b7defd7629f5baa17cc9d789f054b443fd8fd639', '1fb99f98084c6c80e486cc43b7defd7629f5baa17cc9d789f054b443fd8fd639', '1fb99f98084c6c80e486cc43b7defd7629f5baa17cc9d789f054b443fd8fd639', '1fb99f98084c6c80e486cc43b7defd7629f5baa17cc9d789f054b443fd8fd639']
+------handle reply: the start of pre-prepare------
+127.0.0.1 - - [01/Aug/2020 16:43:50] "POST /transactions/new_report HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2020 16:43:50] "POST /transactions/new_vid HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2020 16:43:50] "POST /transactions/new_report HTTP/1.1" 200 -
+------handle blockhash: the start of reply------
++++++commitMessage now:+++++
+['f45cf8d941558a5603eeecaa67e64b9e1daf85017163f02db54d34dc820e6a76', '6ce95bc8d6231b4d587ad8d41ccd13ef3b3f67c2f4acc2e39e8490df84883d38', '1fb99f98084c6c80e486cc43b7defd7629f5baa17cc9d789f054b443fd8fd639', '1fb99f98084c6c80e486cc43b7defd7629f5baa17cc9d789f054b443fd8fd639', '1fb99f98084c6c80e486cc43b7defd7629f5baa17cc9d789f054b443fd8fd639', '1fb99f98084c6c80e486cc43b7defd7629f5baa17cc9d789f054b443fd8fd639', '1fb99f98084c6c80e486cc43b7defd7629f5baa17cc9d789f054b443fd8fd639', '1fb99f98084c6c80e486cc43b7defd7629f5baa17cc9d789f054b443fd8fd639', '1fb99f98084c6c80e486cc43b7defd7629f5baa17cc9d789f054b443fd8fd639']
+-------------------I am correct!!!!!!!!--------------------
+------send reply: the end of reply------
+primary_node_address:
+('localhost', 49152)
+------handle reply: the start of pre-prepare------
+------handle request: the start of prepare------
+the hash of last view:
+1fb99f98084c6c80e486cc43b7defd7629f5baa17cc9d789f054b443fd8fd639
+------handle alltx------
++++++an alltx added,the transaction now:+++++
+------handle blockhash: the start of reply------
+send tx: 17
++++++commitMessage now:+++++
+received tx: 31
+------handle alltx------
+current tx: 45
+['f45cf8d941558a5603eeecaa67e64b9e1daf85017163f02db54d34dc820e6a76', '6ce95bc8d6231b4d587ad8d41ccd13ef3b3f67c2f4acc2e39e8490df84883d38', '1fb99f98084c6c80e486cc43b7defd7629f5baa17cc9d789f054b443fd8fd639', '1fb99f98084c6c80e486cc43b7defd7629f5baa17cc9d789f054b443fd8fd639', '1fb99f98084c6c80e486cc43b7defd7629f5baa17cc9d789f054b443fd8fd639', '1fb99f98084c6c80e486cc43b7defd7629f5baa17cc9d789f054b443fd8fd639', '1fb99f98084c6c80e486cc43b7defd7629f5baa17cc9d789f054b443fd8fd639', '1fb99f98084c6c80e486cc43b7defd7629f5baa17cc9d789f054b443fd8fd639', '1fb99f98084c6c80e486cc43b7defd7629f5baa17cc9d789f054b443fd8fd639', '1fb99f98084c6c80e486cc43b7defd7629f5baa17cc9d789f054b443fd8fd639']
++++++an alltx added,the transaction now:+++++
+send tx: 17
+received tx: 31
+current tx: 45
+write to db
+view: 11
+the tx we want to send:
+[<transaction.Tx_vid object at 0x00000210E9BD5A60>, <transaction.Tx_report object at 0x00000210E9BD5E50>, <transaction.Tx_report object at 0x00000210E9BBBC10>, <transaction.Tx_report object at 0x00000210E9BBBC40>, <transaction.Tx_report object at 0x00000210E9BC85E0>, <transaction.Tx_report object at 0x00000210E9BC8F10>, <transaction.Tx_vid object at 0x00000210E9BC8F40>, <transaction.Tx_vid object at 0x00000210E9BC8C40>, <transaction.Tx_report object at 0x00000210E9BC8DC0>, <transaction.Tx_vid object at 0x00000210E9BC8F70>, <transaction.Tx_report object at 0x00000210E9BC8250>, <transaction.Tx_report object at 0x00000210E9BC81C0>, <transaction.Tx_vid object at 0x00000210E9BC8430>, <transaction.Tx_report object at 0x00000210E9BC8370>]
+------send alltx: the end of prepare------
+sendalltx to  ('localhost', 64506)
+sendalltx to  ('localhost', 64505)
+------handle alltx------
++++++an alltx added,the transaction now:+++++
+sendalltx to  ('localhost', 64504)
+send tx: 14
+received tx: 14
+------handle alltx------
+current tx: 14
+sendalltx to  ('localhost', 64503)
++++++an alltx added,the transaction now:+++++
+send tx: 14
+received tx: 14
+current tx: 14
+sendalltx to  ('localhost', 64502)
+------handle alltx------
++++++an alltx added,the transaction now:+++++
+------handle alltx------
+send tx: 14
+received tx: 14
+sendalltx to  ('localhost', 64501)
+current tx: 14
+------handle alltx------
++++++an alltx added,the transaction now:+++++
+------handle alltx------
+send tx: 14
+sendalltx to  ('localhost', 64500)
+received tx: 14
+current tx: 14
+sendalltx to  ('localhost', 49152)
++++++an alltx added,the transaction now:+++++
+send tx: 14
+sendalltx to  ('localhost', 64508)
+received tx: 14
+------handle alltx------
+current tx: 14
++++++an alltx added,the transaction now:+++++
+send tx: 14
+received tx: 14
+current tx: 28
++++++an alltx added,the transaction now:+++++
+send tx: 14
+received tx: 14
+current tx: 31
+127.0.0.1 - - [01/Aug/2020 16:43:51] "POST /transactions/new_report HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2020 16:43:51] "POST /transactions/new_report HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2020 16:43:51] "POST /transactions/new_report HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2020 16:43:51] "POST /transactions/new_report HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2020 16:43:51] "POST /transactions/new_vid HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2020 16:43:51] "POST /transactions/new_report HTTP/1.1" 200 -
+------handle blockhash: the start of reply------
++++++commitMessage now:+++++
+['b0ada8b7d73ddb82ec8a8489f9dcd3c154c0ac02f9d7af5e532e4a5e8956365e']
+127.0.0.1 - - [01/Aug/2020 16:43:52] "POST /transactions/new_report HTTP/1.1" 200 -
+------handle blockhash: the start of reply------
++++++commitMessage now:+++++
+['b0ada8b7d73ddb82ec8a8489f9dcd3c154c0ac02f9d7af5e532e4a5e8956365e', '269ccda5e8073abce46d207cfb47c3e82c8de4c5ebc76f587d81da02c15b5044']    
+------handle blockhash: the start of reply------
++++++commitMessage now:+++++
+['b0ada8b7d73ddb82ec8a8489f9dcd3c154c0ac02f9d7af5e532e4a5e8956365e', '269ccda5e8073abce46d207cfb47c3e82c8de4c5ebc76f587d81da02c15b5044', '269ccda5e8073abce46d207cfb47c3e82c8de4c5ebc76f587d81da02c15b5044']
+------handle blockhash: the start of reply------
++++++commitMessage now:+++++
+['b0ada8b7d73ddb82ec8a8489f9dcd3c154c0ac02f9d7af5e532e4a5e8956365e', '269ccda5e8073abce46d207cfb47c3e82c8de4c5ebc76f587d81da02c15b5044', '269ccda5e8073abce46d207cfb47c3e82c8de4c5ebc76f587d81da02c15b5044', '269ccda5e8073abce46d207cfb47c3e82c8de4c5ebc76f587d81da02c15b5044']        
+-------collected enough tx: the start of commit-------
+current: 31
+before merkle:
+current tx: 31
+received tx: 21
+send tx: 14
+[<transaction.Tx_vid object at 0x00000210E9BD5A60>, <transaction.Tx_report object at 0x00000210E9BD53A0>, <transaction.Tx_report object at 0x00000210E9BD5F40>, <transaction.Tx_report object at 0x00000210E9BBBC10>, <transaction.Tx_vid object at 0x00000210E9BD5D60>, <transaction.Tx_report object at 0x00000210E9BD5E20>, <transaction.Tx_vid object at 0x00000210E9B87400>, <transaction.Tx_vid object at 0x00000210E9BD5D00>, <transaction.Tx_report object at 0x00000210E9BD5FA0>, <transaction.Tx_report object at 0x00000210E9BBBC40>, <transaction.Tx_vid object at 0x00000210E9BD5DC0>, <transaction.Tx_report object at 0x00000210E9BC85E0>, <transaction.Tx_report object at 0x00000210E9BC8F10>, <transaction.Tx_report object at 0x00000210E9BD5250>, <transaction.Tx_report object at 0x00000210E9BD5E50>, <transaction.Tx_report object at 0x00000210E9BC8250>, <transaction.Tx_report object at 0x00000210E9BC8DC0>, <transaction.Tx_vid object at 0x00000210E9BD5EE0>, <transaction.Tx_vid object at 0x00000210E9BC8F40>, <transaction.Tx_vid object at 0x00000210E9BC8F70>, <transaction.Tx_report object at 0x00000210E9BD5E80>, <transaction.Tx_vid object at 0x00000210E9BC8C40>, <transaction.Tx_vid object at 0x00000210E9BD2970>, <transaction.Tx_vid object at 0x00000210E9BC8430>, <transaction.Tx_report object at 0x00000210E9BC8370>, <transaction.Tx_report object at 0x00000210E9BD5C70>, <transaction.Tx_report object at 0x00000210E9BD5370>, <transaction.Tx_vid object at 0x00000210E9BD2820>, <transaction.Tx_report object at 0x00000210E9BC81C0>, <transaction.Tx_vid object at 0x00000210E9BD5AF0>, <transaction.Tx_report object at 0x00000210E9BD5C40>]
+new block found
+------send blockhash: the end of commit------
+127.0.0.1 - - [01/Aug/2020 16:43:52] "POST /transactions/new_report HTTP/1.1" 200 -
+------handle blockhash: the start of reply------
++++++commitMessage now:+++++
+['b0ada8b7d73ddb82ec8a8489f9dcd3c154c0ac02f9d7af5e532e4a5e8956365e', '269ccda5e8073abce46d207cfb47c3e82c8de4c5ebc76f587d81da02c15b5044', '269ccda5e8073abce46d207cfb47c3e82c8de4c5ebc76f587d81da02c15b5044', '269ccda5e8073abce46d207cfb47c3e82c8de4c5ebc76f587d81da02c15b5044', '269ccda5e8073abce46d207cfb47c3e82c8de4c5ebc76f587d81da02c15b5044']
+------handle blockhash: the start of reply------
++++++commitMessage now:+++++
+['b0ada8b7d73ddb82ec8a8489f9dcd3c154c0ac02f9d7af5e532e4a5e8956365e', '269ccda5e8073abce46d207cfb47c3e82c8de4c5ebc76f587d81da02c15b5044', '269ccda5e8073abce46d207cfb47c3e82c8de4c5ebc76f587d81da02c15b5044', '269ccda5e8073abce46d207cfb47c3e82c8de4c5ebc76f587d81da02c15b5044', '269ccda5e8073abce46d207cfb47c3e82c8de4c5ebc76f587d81da02c15b5044', '269ccda5e8073abce46d207cfb47c3e82c8de4c5ebc76f587d81da02c15b5044']
+127.0.0.1 - - [01/Aug/2020 16:43:52] "POST /transactions/new_vid HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2020 16:43:52] "POST /transactions/new_vid HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2020 16:43:52] "POST /transactions/new_vid HTTP/1.1" 200 -
+------handle blockhash: the start of reply------
++++++commitMessage now:+++++
+['b0ada8b7d73ddb82ec8a8489f9dcd3c154c0ac02f9d7af5e532e4a5e8956365e', '269ccda5e8073abce46d207cfb47c3e82c8de4c5ebc76f587d81da02c15b5044', '269ccda5e8073abce46d207cfb47c3e82c8de4c5ebc76f587d81da02c15b5044', '269ccda5e8073abce46d207cfb47c3e82c8de4c5ebc76f587d81da02c15b5044', '269ccda5e8073abce46d207cfb47c3e82c8de4c5ebc76f587d81da02c15b5044', '269ccda5e8073abce46d207cfb47c3e82c8de4c5ebc76f587d81da02c15b5044', '269ccda5e8073abce46d207cfb47c3e82c8de4c5ebc76f587d81da02c15b5044']
+------handle reply: the start of pre-prepare------
+127.0.0.1 - - [01/Aug/2020 16:43:52] "POST /transactions/new_report HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2020 16:43:52] "POST /transactions/new_vid HTTP/1.1" 200 -
+127.0.0.1 - - [01/Aug/2020 16:43:52] "POST /transactions/new_report HTTP/1.1" 200 -
+------handle blockhash: the start of reply------
++++++commitMessage now:+++++
+['b0ada8b7d73ddb82ec8a8489f9dcd3c154c0ac02f9d7af5e532e4a5e8956365e', '269ccda5e8073abce46d207cfb47c3e82c8de4c5ebc76f587d81da02c15b5044', '269ccda5e8073abce46d207cfb47c3e82c8de4c5ebc76f587d81da02c15b5044', '269ccda5e8073abce46d207cfb47c3e82c8de4c5ebc76f587d81da02c15b5044', '269ccda5e8073abce46d207cfb47c3e82c8de4c5ebc76f587d81da02c15b5044', '269ccda5e8073abce46d207cfb47c3e82c8de4c5ebc76f587d81da02c15b5044', '269ccda5e8073abce46d207cfb47c3e82c8de4c5ebc76f587d81da02c15b5044', '269ccda5e8073abce46d207cfb47c3e82c8de4c5ebc76f587d81da02c15b5044']
+-------------------I am correct!!!!!!!!--------------------
+------send reply: the end of reply------
+primary_node_address:
+('localhost', 64508)
+-------send request: the end of pre-prepare-------
+write to db
+view: 12
+------send alltx: the end of prepare------
+sendalltx to  ('localhost', 64506)
+sendalltx to  ('localhost', 64505)
+sendalltx to  ('localhost', 64504)
+sendalltx to  ('localhost', 64503)
+sendalltx to  ('localhost', 64502)
+------handle alltx------
++++++an alltx added,the transaction now:+++++
+sendalltx to  ('localhost', 64501)
+send tx: 14
+sendalltx to  ('localhost', 64500)
+received tx: 14
+sendalltx to  ('localhost', 49152)
+current tx: 0
+------handle alltx------
+sendalltx to  ('localhost', 64508)
++++++an alltx added,the transaction now:+++++
+------handle alltx------
+changed
+send tx: 14
+------handle alltx------
+received tx: 14
+current tx: 14
+------handle alltx------
++++++an alltx added,the transaction now:+++++
+send tx: 14
+received tx: 14
+------handle alltx------
+current tx: 14
++++++an alltx added,the transaction now:+++++
+send tx: 14
+received tx: 14
+current tx: 26
+------handle alltx------
++++++an alltx added,the transaction now:+++++
+send tx: 14
+------handle alltx------
+received tx: 14
+current tx: 26
++++++an alltx added,the transaction now:+++++
+send tx: 14
+received tx: 14
+current tx: 26
++++++an alltx added,the transaction now:+++++
+------handle alltx------
+send tx: 14
+received tx: 14
+current tx: 26
++++++an alltx added,the transaction now:+++++
+send tx: 14
+received tx: 14
+current tx: 26
++++++an alltx added,the transaction now:+++++
+send tx: 14
+received tx: 14
+current tx: 30
+127.0.0.1 - - [01/Aug/2020 16:43:53] "POST /transactions/new_report HTTP/1.1" 200 -
