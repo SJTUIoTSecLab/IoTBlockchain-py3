@@ -1,3 +1,4 @@
+import asyncio
 import json
 import random
 import threading
@@ -5,8 +6,7 @@ import time
 import urllib.request
 from argparse import ArgumentParser
 from builtins import str
-from random import randint
-
+import random
 from flask import jsonify, request, Flask
 
 import db
@@ -15,7 +15,6 @@ from script import Script, get_address_from_ripemd160
 from wallet import Wallet
 
 node_list = []
-expectedClientNum = 4
 defaultPort = 30134
 serverIP = "121.36.95.93"
 serverAddress = "121.36.95.93:30134"
@@ -57,12 +56,14 @@ def bootstrap(address, seeds):
     req = urllib.request.Request("http://" + address + "/bootstrap",
                                  json.dumps(data).encode('utf-8'),
                                  {"Content-Type": "application/json"})
-    res_data = urllib.request.urlopen(req)
-    res = res_data.read()
-    return res
+
+    try:
+        urllib.request.urlopen(req)
+    except Exception as e:
+        print(e)
 
 
-def start_simulation():
+async def start_simulation():
 
     while True:
         if len(node_list) == expectedClientNum:
@@ -77,12 +78,21 @@ def start_simulation():
         print(seed_list)
         bootstrap(str(node["ip"]) + ":" + str(node["port"]), seed_list)
 
-    print()
-    "ok"
+    print("ok")
 
-    node_manager.start();
+    node_manager.start()
 
     time.sleep(1)
+
+    # first distribute some token to every nodes
+    for recv in range(1, len(node_list)):
+        perform_transaction(0, recv)
+
+    while True:
+        await asyncio.gather(*(generate_transactions(i) for i in range(0, len(node_list))))
+
+
+    '''
 
     node1_wallet = node_list[0]["wallet"]
     node2_wallet = node_list[1]["wallet"]
@@ -100,7 +110,7 @@ def start_simulation():
             amount = random.randint(1, node1_balance) / 10
             print('send from node1 to node2 with amount:' + str(amount))
             simulate_tx(node1_address, node1_wallet, node2_wallet, amount)
-            time.sleep(random.randint(4, 5))
+            time.sleep(random.random())
 
         node1_balance = get_balance(node1_address, node1_wallet)
         node1_balance = node1_balance['balance']
@@ -108,7 +118,7 @@ def start_simulation():
             amount = random.randint(1, node1_balance) / 10
             print('send from node1 to node3 with amount:' + str(amount))
             simulate_tx(node1_address, node1_wallet, node3_wallet, amount)
-            time.sleep(random.randint(4, 5))
+            time.sleep(random.random())
 
         # node2 发送给node1 node3
         node2_balance = get_balance(node2_address, node2_wallet)
@@ -117,7 +127,7 @@ def start_simulation():
             amount = random.randint(1, node2_balance) / 10
             print('send from node2 to node1 with amount:' + str(amount))
             simulate_tx(node2_address, node2_wallet, node1_wallet, amount)
-            time.sleep(random.randint(4, 5))
+            time.sleep(random.random())
 
         node2_balance = get_balance(node2_address, node2_wallet)
         node2_balance = node2_balance['balance']
@@ -125,7 +135,7 @@ def start_simulation():
             amount = random.randint(1, node2_balance) / 10
             print('send from node2 to node3 with amount:' + str(amount))
             simulate_tx(node2_address, node2_wallet, node3_wallet, amount)
-            time.sleep(random.randint(4, 5))
+            time.sleep(random.random())
         #
         # node3 发送给node1 node2
         node3_balance = get_balance(node3_address, node3_wallet)
@@ -134,7 +144,7 @@ def start_simulation():
             amount = random.randint(1, node3_balance) / 10
             print('send from node3 to node1 with amount:' + str(amount))
             simulate_tx(node3_address, node3_wallet, node1_wallet, amount)
-            time.sleep(random.randint(4, 5))
+            time.sleep(random.random())
 
         node3_balance = get_balance(node3_address, node3_wallet)
         node3_balance = node3_balance['balance']
@@ -142,8 +152,44 @@ def start_simulation():
             amount = random.randint(1, node3_balance) / 10
             print('send from node3 to node2 with amount:' + str(amount))
             simulate_tx(node3_address, node3_wallet, node2_wallet, amount)
-            time.sleep(random.randint(4, 5))
-        time.sleep(5)
+            time.sleep(random.random())
+        time.sleep(10)
+
+'''
+
+
+async def generate_transactions(sender):
+    await asyncio.sleep(random.expovariate(0.5))
+    receiver = random.randint(0, len(node_list)-1)
+    if receiver == sender:
+        receiver = (receiver + 1) % len(node_list)
+
+    perform_transaction(sender, receiver)
+
+
+def perform_transaction(sender, receiver, amount=-1):
+
+    sender_wallet = node_list[sender]["wallet"]
+    receiver_wallet = node_list[receiver]["wallet"]
+
+    sender_address = str(node_list[sender]["ip"]) + ":" + str(node_list[sender]["port"])
+
+    if not amount > 0:
+        sender_balance = get_balance(sender_address, sender_wallet)
+
+        if sender_balance is None:
+            return
+
+        sender_balance = sender_balance['balance']
+
+        if sender_balance <= 0:
+            return
+
+        amount = random.random() * sender_balance / 10
+
+    print('send from node ' + str(sender) + ' to node ' + str(receiver) + ' with amount:' + str(amount))
+    simulate_tx(sender_address, sender_wallet, receiver_wallet, amount)
+
 
 
 def simulate_tx(address, sender, receiver, amount):
@@ -160,9 +206,13 @@ def get_balance(address, wallet_address):
     req = urllib.request.Request(url="http://" + address + "/balance?address=" + wallet_address,
                                  headers={"Content-Type": "application/json"})
 
-    res_data = urllib.request.urlopen(req)
-    res = res_data.read()
-    return json.loads(res)
+    try:
+        res_data = urllib.request.urlopen(req)
+        res = res_data.read()
+        return json.loads(res)
+    except Exception as e:
+        print(e)
+        return None
 
 
 def get_node_info(address):
@@ -190,9 +240,6 @@ def bootstrap_app():
     all_nodes = node_manager.buckets.get_all_nodes()
     output = json.dumps(all_nodes, default=lambda obj: obj.__dict__, indent=4)
 
-    if not node_manager.is_primary:
-        node_manager.start();
-
     return output, 200
 
 
@@ -207,17 +254,6 @@ def curr_node_app():
     }
     output = json.dumps(output, default=lambda obj: obj.__dict__, indent=4)
     return output, 200
-
-
-
-# @app.route('/chain', methods=['GET'])
-# def full_chain():
-#     output = {
-#         'length': db.get_block_height(blockchain.wallet.address),
-#         'chain': blockchain.json_output(),
-#     }
-#     json_output = json.dumps(output, indent=4)
-#     return json_output, 200
 
 
 @app.route('/transactions/new', methods=['POST'])
@@ -411,12 +447,14 @@ if __name__ == '__main__':
 
     parser = ArgumentParser()
     parser.add_argument('-s', action='store_true')
+    parser.add_argument('-n', default=4, type=int, help='number of expected nodes')
     args = parser.parse_args()
     isServer = args.s
+    expectedClientNum = args.n
 
     if isServer:
 
-        node_manager = NodeManager('0.0.0.0', defaultPort, isServer, True, expectedClientNum)
+        node_manager = NodeManager('0.0.0.0', defaultPort, isServer, True, expectedClientNum, True)
         blockchain = node_manager.blockchain
 
         print("Wallet address: %s" % blockchain.get_wallet_address())
@@ -424,8 +462,6 @@ if __name__ == '__main__':
         thread = threading.Thread(target=app.run, args=('0.0.0.0', defaultPort))
         thread.setDaemon(True)
         thread.start()
-
-        time.sleep(1)
 
         serverNode = {
             'node_id': node_manager.node_id,
@@ -435,21 +471,26 @@ if __name__ == '__main__':
             'pubkey_hash': Script.sha160(str(blockchain.wallet.pubkey))
         }
         node_list.append(serverNode)
-        start_simulation()
+        loop =asyncio.get_event_loop()
+        loop.run_until_complete(start_simulation())
+
+        thread.join()
 
     else:
 
-        port = randint(30000, 31000)
+        lport = random.randint(30000, 31000)
 
-        node_manager = NodeManager('0.0.0.0', port, isServer, True)
+        node_manager = NodeManager('0.0.0.0', lport, isServer, True, expectedClientNum, False)
         blockchain = node_manager.blockchain
 
         print("Wallet address: %s" % blockchain.get_wallet_address())
 
-        thread = threading.Thread(target=app.run, args=('0.0.0.0', port))
+        thread = threading.Thread(target=app.run, args=('0.0.0.0', lport))
         thread.setDaemon(True)
         thread.start()
 
-        time.sleep(1)
+        # shall be await app started
+        time.sleep(5)
         client_hello()
+
         thread.join()

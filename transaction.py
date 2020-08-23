@@ -40,7 +40,7 @@ class Transaction(object):
         coinbase不存在输入，txins为None
         :return:
         """
-        return self.txins[0].prev_txid is None
+        return len(self.txins) == 0 or self.txins[0].prev_txid is None
 
     def json_output(self):
         output = {
