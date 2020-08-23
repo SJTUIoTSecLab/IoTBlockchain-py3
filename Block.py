@@ -44,7 +44,6 @@ class Block(object):
             'timestamp': self.timestamp,
             'nonce': self.nonce,
             'current_hash': self.current_hash,
-            'difficulty': self.difficulty,
             'merkleroot': self.merkleroot,
             'transactions': [tx.json_output() for tx in self.transactions]
         }

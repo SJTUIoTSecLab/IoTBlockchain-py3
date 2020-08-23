@@ -270,8 +270,28 @@ def tx_in_block():
             }
             cnt += 1
 
-    
     return json.dumps(tmp), 200
+
+
+@app.route('/block_time', methods=['GET'])
+def block_time():
+    output = node_manager.blocktime
+    output = json.dumps(output, default=lambda obj: obj.__dict__, indent=4)
+    return output, 200
+
+
+@app.route('/get_block_time', methods=['GET'])
+def get_block_time():
+    view = request.args.get('view')
+    view = int(view)
+    if view in node_manager.blocktime.keys():
+        response = {
+            'view': view,
+            'time': node_manager.blocktime[view]
+        }
+        return jsonify(response), 200
+    else:
+        return "Missing value", 200
 
 
 @app.route('/unconfirm_tx_info', methods=['GET'])
@@ -292,6 +312,66 @@ def block_height():
         'value': db.get_block_height(blockchain.wallet.address)
     }
     return json.dumps(response), 200
+
+
+@app.route('/GST', methods=['GET'])
+def getGST():
+    response = {
+        'GST': node_manager.GST
+    }
+    return json.dumps(response), 200
+
+
+@app.route('/step', methods=['GET'])
+def get_step():
+    response = {
+        'step': node_manager.step
+    }
+    return json.dumps(response), 200
+
+
+@app.route('/asyn_node', methods=['GET'])
+def asyn_node():
+    view = request.args.get('view')
+
+    rate = round(node_manager.asyn[int(view)] / (node_manager.numSeedNode + 1), 3)
+
+    response = {
+        'view': int(view),
+        'numAsyn': node_manager.asyn[int(view)],
+        'numSeedNode': node_manager.numSeedNode,
+        'rate': rate
+    }
+
+    return jsonify(response), 200
+
+
+@app.route('/asyn_node_all', methods=['GET'])
+def asyn_node_all():
+    response = {
+        'numAsyn': node_manager.asyn,
+        'numSeedNode': node_manager.numSeedNode,
+    }
+
+    return jsonify(response), 200
+
+
+
+@app.route('/consensus_time', methods=['GET'])
+def consensus_time():
+    view = request.args.get('view')
+
+    response = {
+        'view': int(view),
+        'time': node_manager.consensus[int(view)]
+    }
+
+    return jsonify(response), 200
+
+
+@app.route('/consensus_time_all', methods=['GET'])
+def consensus_time_all():
+    return jsonify(node_manager.consensus), 200
 
 
 @app.route('/latest_tx', methods=['GET'])
@@ -333,8 +413,8 @@ def latest_tx():
     return json.dumps(response), 200
 
 
-@app.route('/block_info', methods=['GET'])
-def block_info():
+@app.route('/block_info_tx', methods=['GET'])
+def block_info_tx():
     height = request.args.get('height')
     block_index = int(height) - 1
 
@@ -377,8 +457,45 @@ def block_info():
         'previous_hash': block.previous_hash,
         'timestamp': block.timestamp,
         'merkleroot': block.merkleroot,
-        'difficulty': block.difficulty,
         'nonce': block.nonce,
+        'transactions': json_transaction
+    }
+
+    return jsonify(response), 200
+
+
+@app.route('/block_info', methods=['GET'])
+def block_info():
+    block_index = request.args.get('block_index')
+
+    block = db.get_block_data_by_index(blockchain.wallet.address, block_index)
+
+    json_transaction = list()
+    for tx in block.transactions:
+        if isinstance(tx, Tx_vid):
+            new_tx = {
+                'txid': tx.txid,
+                'timestamp': tx.timestamp,
+                'type': 'vid',
+                'vid': tx.vid
+            }
+        elif isinstance(tx, Tx_report):
+            new_tx = {
+                'txid': tx.txid,
+                'timestamp': tx.timestamp,
+                'type': 'report',
+                'edgeId': tx.edgeId,
+                'meanSpeed': tx.meanSpeed,
+                'vehicleNum': tx.vehicleNum
+            }
+        json_transaction.append(new_tx)
+
+    response = {
+        'index': block.index,
+        'view': block.timestamp,
+        'current_hash': block.current_hash,
+        'previous_hash': block.previous_hash,
+        'merkleroot': block.merkleroot,
         'transactions': json_transaction
     }
 
@@ -398,7 +515,7 @@ if __name__ == '__main__':
     else:
         genisus_node = False
 
-    node_manager = NodeManager('localhost', 0, genisus_node, True, 2)
+    node_manager = NodeManager('localhost', 0, genisus_node, True, False, 2)
     blockchain = node_manager.blockchain
 
     print("Wallet address: %s" % blockchain.get_wallet_address())

@@ -204,9 +204,7 @@ class ProcessMessages(socketserver.BaseRequestHandler):
             print("send tx:", len(self.server.node_manager.blockchain.send_transactions))
             print("received tx:", len(self.server.node_manager.blockchain.received_transactions))
             print("current tx:", len(self.server.node_manager.blockchain.current_transactions))
-            
 
-                
     def handle_sendblockhash(self, payload):
         print("------handle blockhash: the start of reply------")
         # with self.server.node_manager.lock:
@@ -220,28 +218,37 @@ class ProcessMessages(socketserver.BaseRequestHandler):
                 for b1 in self.server.node_manager.commitMessages:
                     if (b == b1):
                         count += 1
-                if (count > old_div((2*self.server.node_manager.numSeedNode), 3)):
+                if (count > old_div(self.server.node_manager.numSeedNode, 2)):
                     # db.write_to_db(blockchain.wallet.address, new_block)
                     print("-------------------I am correct!!!!!!!!--------------------")
                     self.server.node_manager.finishflag = True
+                    self.server.node_manager.hashcache = b
+                    self.server.node_manager.asyn[self.server.node_manager.view] = self.server.node_manager.numSeedNode - self.server.node_manager.commitMessages.count(b)
                     if not self.server.node_manager.is_primary:
                         self.server.node_manager.sendreply(payload['blockhash'])
                         self.server.node_manager.replysend['view'] = self.server.node_manager.view
                         self.server.node_manager.replysend['time'] = int(time.time())
                     return
+        else:
+            self.server.node_manager.asyn[self.server.node_manager.view] = self.server.node_manager.numSeedNode - self.server.node_manager.commitMessages.count(b)
 
     def handle_sendreply(self, payload):
         print("------handle reply: the start of pre-prepare------")
         # with self.server.node_manager.lock:
         if payload['view'] == self.server.node_manager.view:
             self.server.node_manager.replyMessage += 1
-        if (self.server.node_manager.replyMessage > old_div((2*self.server.node_manager.numSeedNode), 3)) and (not self.server.node_manager.successflag):
+        if (self.server.node_manager.replyMessage > old_div(self.server.node_manager.numSeedNode, 2)) and (not self.server.node_manager.successflag):
+            self.server.node_manager.consensus[payload['view']] = round(time.time() - self.server.node_manager.timetmp, 3)
             self.server.node_manager.successflag = True
             self.server.node_manager.replyMessage = 0
             print("next")
-            self.server.node_manager.sendrequestmessage(payload)
-            self.server.node_manager.is_primary = False
-            # self.server.node_manager.sendrequest(payload['blockhash'])
+            while int(time.time()) < self.server.node_manager.step + self.server.node_manager.starttime:
+                time.sleep(1)
+            if self.server.node_manager.leadershift:
+                self.server.node_manager.sendrequestmessage(payload)
+                self.server.node_manager.is_primary = False
+            else:
+                self.server.node_manager.sendrequest(payload['blockhash'])
 
     def handle_sendrequestmessage(self,payload):
         self.server.node_manager.is_primary = True
@@ -250,10 +257,12 @@ class ProcessMessages(socketserver.BaseRequestHandler):
 
     def handle_sendrequest(self, payload):
         print("------handle request: the start of prepare------")
+        self.server.node_manager.starttime = payload["start"]
         # with self.server.node_manager.lock:
         if payload["hash"] != -1:
             if payload["hash"] != self.server.node_manager.blockcache.current_hash:
                 self.server.node_manager.failhash.append(payload["hash"])
+                self.server.node_manager.fail = True
             else:
                 # print payload["address"]
                 print("the hash of last view:")
@@ -263,7 +272,13 @@ class ProcessMessages(socketserver.BaseRequestHandler):
                 # print "pre-prepared"
                 #确认入链
                 if self.server.node_manager.view >= 1:
-                    db.write_to_db(self.server.node_manager.blockchain.wallet.address, self.server.node_manager.blockcache)   
+                    db.write_to_db(self.server.node_manager.blockchain.wallet.address, self.server.node_manager.blockcache)
+                    tmp = time.time()
+                    if self.server.node_manager.lastblocktime['view'] == self.server.node_manager.view - 1 and self.server.node_manager.lastblocktime['time'] != -1:
+                        self.server.node_manager.blocktime[self.server.node_manager.view] = round(tmp - self.server.node_manager.lastblocktime['time'], 3)
+                        print('+++handle set block time+++')
+                    self.server.node_manager.lastblocktime['time'] = tmp
+                    self.server.node_manager.lastblocktime['view'] = self.server.node_manager.view
             if self.server.node_manager.view >= 1:
                 self.server.node_manager.commitMessages = []
                 self.server.node_manager.maxTime = 0
@@ -275,7 +290,6 @@ class ProcessMessages(socketserver.BaseRequestHandler):
                 # self.server.node_manager.current_transactions=[]
                 # self.server.node_manager.received_transactions=[]
                 self.server.node_manager.blockchain.received_transactions = self.server.node_manager.blockchain.received_transactions[len(self.server.node_manager.blockchain.send_transactions):]
-                self.server.node_manager.blockchain.send_transactions = deepcopy(self.server.node_manager.blockchain.received_transactions)
                 self.server.node_manager.blockchain.current_transactions = self.server.node_manager.blockchain.current_transactions[self.server.node_manager.txinblock:]
                 self.server.node_manager.receivealltx -= self.server.node_manager.receivealltx_last
                 # self.server.node_manager.startflag = True
@@ -283,7 +297,13 @@ class ProcessMessages(socketserver.BaseRequestHandler):
                 # print "transaction list clear"
                 # time.sleep(15)
             self.server.node_manager.view += 1
+            # self.server.node_manager.blockchain.send_transactions = deepcopy(self.server.node_manager.blockchain.received_transactions)
+            self.server.node_manager.blockchain.send_transactions.clear()
+            for tx in self.server.node_manager.blockchain.received_transactions:
+                if tx.timestamp < self.server.node_manager.starttime - 1:
+                    self.server.node_manager.blockchain.send_transactions.append(tx)
             self.server.node_manager.finishflag = False
+            self.server.node_manager.successflag = False
             print("view:", self.server.node_manager.view)
             if (self.server.node_manager.is_committee):
                 print("the tx we want to send:")
@@ -298,8 +318,13 @@ class ProcessMessages(socketserver.BaseRequestHandler):
             self.server.node_manager.commitMessages = []
             self.server.node_manager.maxTime = 0
             self.server.node_manager.blockchain.current_transactions = self.server.node_manager.blockchain.current_transactions[self.server.node_manager.txinblock:]
-            self.server.node_manager.blockchain.send_transactions = deepcopy(self.server.node_manager.blockchain.received_transactions)
+            # self.server.node_manager.blockchain.send_transactions = deepcopy(self.server.node_manager.blockchain.received_transactions)
+            self.server.node_manager.blockchain.send_transactions.clear()
+            for tx in self.server.node_manager.blockchain.received_transactions:
+                if tx.timestamp < self.server.node_manager.starttime - 1:
+                    self.server.node_manager.blockchain.send_transactions.append(tx)
             self.server.node_manager.receivealltx -= self.server.node_manager.receivealltx_last
+            self.server.node_manager.successflag = False
             if (self.server.node_manager.is_committee):
                 self.server.node_manager.sendalltx(self.server.node_manager.blockchain.send_transactions)
                 self.server.node_manager.startflag = True
@@ -312,13 +337,12 @@ class ProcessMessages(socketserver.BaseRequestHandler):
         #找有没有对应的块
         print("------handle send correct------")
         obj = db.get_block_data_by_hash(self.server.node_manager.blockchain.get_wallet_address(), payload["hash"])
+        print('correct block :', obj)
         if obj:
             self.server.node_manager.sendblock({"block": obj, "address": payload["address"]})
         else:
             self.server.node_manager.sendblock({"block": -1, "address": payload["address"]})
 
-
-    
     def handle_sendblock(self, payload):
         '''
         处理收到的某些缺失view的信息
@@ -328,6 +352,8 @@ class ProcessMessages(socketserver.BaseRequestHandler):
         if not payload == -1:
             del(self.server.node_manager.failhash[0])
             db.write_to_db(self.server.node_manager.blockchain.wallet.address, payload)
+        if not self.server.node_manager.failhash:
+            self.server.node_manager.fail = False
 
 
     # def handle_sendblock(self, payload):
@@ -558,7 +584,7 @@ class NodeManager(object):
 
     """
 
-    def __init__(self, ip, port=0, genisus_node=False, is_committee_node=False, expected_client_num=4):
+    def __init__(self, ip, port=0, genisus_node=False, is_committee_node=False, leader_shift=False, expected_client_num=4):
         self.ip = ip
         self.port = port
         self.node_id = self.__random_id()
@@ -576,15 +602,29 @@ class NodeManager(object):
         self.committee_member = []
         # self.prepareMessages = []
         self.commitMessages = []
+        self.hashcache = 0
         self.blockcache = Block(0,0,0,0,0,4)
         self.primary_node_address = self.address
+        self.starttime = 0
         self.replyMessage = 0
-        self.GST = 0.5
+        self.GST = 5
+        self.step = 10
         self.replyflag = False
         self.finishflag = False #是否收到法定个哈希并sendreply
         self.successflag = False
         self.receiveblock = True
         self.failhash = []
+        self.fail = False
+        self.leadershift = leader_shift
+
+        self.asyn = {}
+
+        self.consensus = {}
+        self.timetmp = 0
+
+        self.blocktime = {}
+        self.lastblocktime = {'view': -1, "time": -1}
+
         self.replysend = {'view': -1, 'time': -1}
         self.disconnect = 0
 
@@ -604,6 +644,8 @@ class NodeManager(object):
         self.server.node_manager = self
         self.blockchain = Blockchain(genisus_node)
         self.numSeedNode = 0
+
+        self.errorflag = True
 
         # 消息处理
         self.processmessages_thread = threading.Thread(target=self.server.serve_forever)
@@ -741,7 +783,6 @@ class NodeManager(object):
         if len(seed_nodes) == 0:
             for seed_node in self.buckets.get_all_nodes():
                 self.iterative_find_nodes(self.client.node_id, seed_node)
-
         
         self.numSeedNode = len(seed_nodes)
 
@@ -782,11 +823,12 @@ class NodeManager(object):
                     print("-------START--------")
                     self.sendrequest(0)
 
-            if not (not self.startflag or self.receivealltx < len(self.committee_member) or
+            if not (not self.startflag or self.receivealltx < len(self.committee_member) or self.fail or
                     int(time.time()) <= self.maxTime or self.expectedClientNum * 2 // 3 >= len(self.committee_member)):
                 print("-------collected enough tx: the start of commit-------")
                 # with self.lock:
                 print('current:', len(self.blockchain.current_transactions))
+                self.timetmp = time.time()
                 self.receivealltx_last = self.receivealltx
                 self.txinblock = len(self.blockchain.current_transactions)
                 # print "txinblock", self.txinblock
@@ -795,7 +837,7 @@ class NodeManager(object):
                 self.sendblockhash(new_block.current_hash)
                 self.startflag = False
 
-            if self.replyflag and self.is_primary and (int(time.time())>self.replytime + 30):
+            if self.replyflag and self.is_primary and (int(time.time())>self.replytime + 5):
                 print("++++++++++BFT FAILED++++++++++")
                 self.sendrequest(-1)
 
@@ -808,7 +850,7 @@ class NodeManager(object):
                 self.client.sendcorrect(self.server.socket, (node.ip, node.port), msg_bytes)
                 member_index += 1
 
-            if self.replysend['view'] == self.view and int(time.time()) > self.replysend['time'] + 100:
+            if self.replysend['view'] == self.view and int(time.time()) > self.replysend['time'] + 10:
                 for node in self.committee_member:
                     msg_obj = packet.Message("sendoff", self.view)
                     msg_bytes = pickle.dumps(msg_obj)
@@ -894,13 +936,22 @@ class NodeManager(object):
         """
         print("-------send request: the end of pre-prepare-------")
         if payload != -1:
+            self.starttime = int(time.time()) #主节点记录轮次开始时间
             if payload != self.blockcache.current_hash:
                 self.failhash.append(payload)
+                self.fail = True
             else:
                 # print "pre-prepared1"
                 # 自身确认入链
                 if self.view >= 1:
                     db.write_to_db(self.blockchain.wallet.address, self.blockcache)
+                    print("blockcache :", self.blockcache)
+                    tmp = time.time()
+                    if self.lastblocktime['view'] == self.view - 1 and self.lastblocktime['time'] != -1:
+                        self.blocktime[self.view] = round(tmp - self.lastblocktime['time'], 3)
+                        print('++++set block time+++')
+                    self.lastblocktime['time'] = tmp
+                    self.lastblocktime['view'] = self.view
             if self.view >=1:
                 self.commitMessages = []
                 self.maxTime = 0
@@ -913,7 +964,7 @@ class NodeManager(object):
             self.successflag = False
             print("view:", self.view)
             for node in self.committee_member:    
-                msg_obj = packet.Message("sendrequest", {"hash":payload, "address": (self.client.ip,self.client.port), "GST":self.GST, 'id':self.node_id} )
+                msg_obj = packet.Message("sendrequest", {"hash":payload, "address": (self.client.ip,self.client.port), "start": self.starttime})
                 msg_bytes = pickle.dumps(msg_obj)
                 self.client.sendrequest(self.server.socket, (node.ip, node.port), msg_bytes)
             # print "++++++++++++++sendrequest&tx++++++++++++++++"
@@ -921,9 +972,10 @@ class NodeManager(object):
             self.startflag = True
             # print "pre-prepared2"
         else:
-            self.GST += 5
+            self.GST += 1
+            self.starttime = int(time.time())
             for node in self.committee_member:    
-                msg_obj = packet.Message("sendrequest", {"hash":payload, "address": (self.client.ip,self.client.port), "GST": self.GST, 'id':self.node_id})
+                msg_obj = packet.Message("sendrequest", {"hash":payload, "address": (self.client.ip,self.client.port), "start": self.starttime, "GST": self.GST})
                 msg_bytes = pickle.dumps(msg_obj)
                 self.client.sendrequest(self.server.socket, (node.ip, node.port), msg_bytes)
             self.commitMessages = []
@@ -933,6 +985,7 @@ class NodeManager(object):
             self.blockchain.send_transactions = deepcopy(self.blockchain.received_transactions)
             self.receivealltx -= self.receivealltx_last
             # print "transaction list reset"
+            self.successflag = False
             print("view:", self.view)
             # print "++++++++++++++sendrequest&tx++++++++++++++++"
             self.sendalltx(self.blockchain.send_transactions)
@@ -999,12 +1052,14 @@ class NodeManager(object):
         :return:
         """
         print("------send blockhash: the end of commit------")
+        print("blockhash :", blockhash)
         for node in self.committee_member:
             msg_obj = packet.Message("sendblockhash", {'blockhash': blockhash, 'view': self.view})
             msg_bytes = pickle.dumps(msg_obj)
             self.client.sendblockhash(self.server.socket, (node.ip, node.port), msg_bytes)
             # error test
-            # if self.view == 4:
+            # if self.view == 4 and self.errorflag:
+            #     self.errorflag = False
             #     break
         if self.is_primary:
             self.replyflag = True
@@ -1012,6 +1067,7 @@ class NodeManager(object):
             # error test
             # if self.view == 3:
             #     self.blockcache.current_hash += '1'
+        print("currunt hash :", self.blockcache.current_hash)
             
 
     def sendreply(self, blockhash):

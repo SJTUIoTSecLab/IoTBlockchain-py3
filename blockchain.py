@@ -104,7 +104,7 @@ class Blockchain(object):
         tx = Transaction([txin], [txoutput], int(time()))
         return tx
 
-    def generate_block(self, merkleroot, next_timestamp, next_nonce, hashes = True):
+    def generate_block(self, merkleroot, next_timestamp, next_nonce):
         """
         创建区块
         :param merkleroot: <str> 默克尔树根节点
@@ -114,9 +114,7 @@ class Blockchain(object):
         """
         previous_block = self.get_last_block()
         next_index = previous_block.index + 1
-        previous_hash = -1
-        if hashes:
-            previous_hash = previous_block.current_hash
+        previous_hash = previous_block.current_hash
         next_block = Block(
             index=next_index,
             previous_hash=previous_hash,
