@@ -150,9 +150,12 @@ def get_block_hash(wallet_address, index):
 
 
 def get_block_data_by_hash(wallet_address, block_hash):
-    with open(wallet_address + '/' + block_hash, 'rb') as f:
-        obj = pickle.load(f)
-        return obj
+    if os.path.exists(wallet_address + '/' + block_hash):
+        with open(wallet_address + '/' + block_hash, 'rb') as f:
+            obj = pickle.load(f)
+            return obj
+    else:
+        return None
 
 
 def get_block_data_by_index(wallet_address, index):

@@ -18,7 +18,7 @@ python run.py -p 5002 &
 
 ### Step 2 : Simulate Transactions
 
-Run ```simulation.py``` (need [SUMO](https://www.eclipse.org/sumo/) installed and configured):
+Run ```simulation.py``` (need [SUMO](https://www.eclipse.org/sumo/) installed and configured) :
 
 ```shell
 python simulation.py

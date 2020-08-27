@@ -1072,9 +1072,9 @@ class NodeManager(object):
         if self.is_primary:
             self.replyflag = True
             self.replytime = int(time.time())
-            # error test
-            # if self.view == 3:
-            #     self.blockcache.current_hash += '1'
+        # error test
+        # if self.view == 3 and not self.is_primary:
+        #     self.blockcache.current_hash += '1'
         print("currunt hash :", self.blockcache.current_hash)
             
 
