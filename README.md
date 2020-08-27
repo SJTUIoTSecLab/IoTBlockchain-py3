@@ -45,7 +45,7 @@ Open your browser and you can visit the following address to :
 	e.g.
 
 	```
-	{"current_hash":"da8865d58a3ba72618de506a6a768a4001369ed95843d340e421dd41e3883998","index":1,"merkleroot":"a2390105c10af9526b19687aeca73e22484a728f67c08c1c66a69ca79afdc414","previous_hash":"000059507af592941b360c6f5b8d3514ebc76045c48eef3505ea101bcef7c5f6","transactions":[{"timestamp":1598184686,"txid":"b4c311195ef8b0a61620f9e76c25af7a468526c8f586dd3f73cd9d6dbc871c37","type":"vid","vid":"a3.0"},{"edgeId":"m1","meanSpeed":20.844183340424205,"timestamp":1598184694,"txid":"2bf61ab1f815013e567aa067602df12ce1edd71db169f30dc0f5a3adc2dfd8a6","type":"report","vehicleNum":2}],"view":1}
+	{"current_hash":"2afad5781174e4db6e92927eadbb91372c949e074ab7b19daa78e16410c12795","index":1,"merkleroot":"608f06bbada61daa5f52c8a529b98b51d8ba119e1ea171430864e9b55e4fc983","previous_hash":"a374ecae0a18b7ae126deb10b08773aa482348db60048f5193a4c4612f247344","timestamp":1598500523,"transactions":[{"timestamp":1598500523,"txid":"bdb613fe08a6a6b904992d00b525f3e64de9e97da36de3664c41c0fd87f68a83","type":"vid","vid":"a3.0"},{"edgeId":"m1","meanSpeed":20.844,"timestamp":1598500530,"txid":"a4a6a5c30d15b691884125f119fa6c4e2a9d16f19747578f3a3fb7638452776d","type":"report","vehicleNum":2}]}
 	```
 
 - http://127.0.0.1:5002/tx_in_block?block_index=1 : get the information of transactions in a certain block
