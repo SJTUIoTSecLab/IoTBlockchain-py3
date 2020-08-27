@@ -223,14 +223,16 @@ class ProcessMessages(socketserver.BaseRequestHandler):
                     print("-------------------I am correct!!!!!!!!--------------------")
                     self.server.node_manager.finishflag = True
                     self.server.node_manager.hashcache = b
-                    self.server.node_manager.asyn[self.server.node_manager.view] = self.server.node_manager.numSeedNode - self.server.node_manager.commitMessages.count(b)
+                    self.server.node_manager.asyn[self.server.node_manager.view] = self.server.node_manager.numSeedNode - \
+                      self.server.node_manager.commitMessages.count(self.server.node_manager.hashcache)
                     if not self.server.node_manager.is_primary:
                         self.server.node_manager.sendreply(payload['blockhash'])
                         self.server.node_manager.replysend['view'] = self.server.node_manager.view
                         self.server.node_manager.replysend['time'] = int(time.time())
                     return
         else:
-            self.server.node_manager.asyn[self.server.node_manager.view] = self.server.node_manager.numSeedNode - self.server.node_manager.commitMessages.count(b)
+            self.server.node_manager.asyn[self.server.node_manager.view] = self.server.node_manager.numSeedNode - \
+              self.server.node_manager.commitMessages.count(self.server.node_manager.hashcache)
 
     def handle_sendreply(self, payload):
         print("------handle reply: the start of pre-prepare------")
@@ -289,8 +291,10 @@ class ProcessMessages(socketserver.BaseRequestHandler):
                 #     self.server.node_manager.current_transactions.remove(b1)
                 # self.server.node_manager.current_transactions=[]
                 # self.server.node_manager.received_transactions=[]
-                self.server.node_manager.blockchain.received_transactions = self.server.node_manager.blockchain.received_transactions[len(self.server.node_manager.blockchain.send_transactions):]
-                self.server.node_manager.blockchain.current_transactions = self.server.node_manager.blockchain.current_transactions[self.server.node_manager.txinblock:]
+                self.server.node_manager.blockchain.received_transactions = \
+                  self.server.node_manager.blockchain.received_transactions[len(self.server.node_manager.blockchain.send_transactions):]
+                self.server.node_manager.blockchain.current_transactions = \
+                  self.server.node_manager.blockchain.current_transactions[self.server.node_manager.txinblock:]
                 self.server.node_manager.receivealltx -= self.server.node_manager.receivealltx_last
                 # self.server.node_manager.startflag = True
                 # db.clear_unconfirmed_tx_from_disk(self.server.node_manager.blockchain.wallet.address)
@@ -317,7 +321,8 @@ class ProcessMessages(socketserver.BaseRequestHandler):
             self.server.node_manager.primary_node_address = payload["address"]
             self.server.node_manager.commitMessages = []
             self.server.node_manager.maxTime = 0
-            self.server.node_manager.blockchain.current_transactions = self.server.node_manager.blockchain.current_transactions[self.server.node_manager.txinblock:]
+            self.server.node_manager.blockchain.current_transactions = \
+              self.server.node_manager.blockchain.current_transactions[self.server.node_manager.txinblock:]
             # self.server.node_manager.blockchain.send_transactions = deepcopy(self.server.node_manager.blockchain.received_transactions)
             self.server.node_manager.blockchain.send_transactions.clear()
             for tx in self.server.node_manager.blockchain.received_transactions:
@@ -584,7 +589,8 @@ class NodeManager(object):
 
     """
 
-    def __init__(self, ip, port=0, genisus_node=False, is_committee_node=False, leader_shift=False, expected_client_num=4, isServer=False):
+    def __init__(self, ip, port=0, genisus_node=False, is_committee_node=False, 
+                    leader_shift=False, expected_client_num=4, isServer=False):
         self.ip = ip
         self.port = port
         self.node_id = self.__random_id()
@@ -603,7 +609,7 @@ class NodeManager(object):
         # self.prepareMessages = []
         self.commitMessages = []
         self.hashcache = 0
-        self.blockcache = Block(0,0,0,0,0,4)
+        self.blockcache = Block(0,0,0,0,0)
         self.primary_node_address = self.address
         self.starttime = 0
         self.replyMessage = 0
@@ -832,7 +838,7 @@ class NodeManager(object):
                 self.receivealltx_last = self.receivealltx
                 self.txinblock = len(self.blockchain.current_transactions)
                 # print "txinblock", self.txinblock
-                new_block = self.blockchain.do_mine(self.view)
+                new_block = self.blockchain.do_mine(self.view, self.starttime)
                 self.blockcache = new_block
                 self.sendblockhash(new_block.current_hash)
                 self.startflag = False
@@ -964,7 +970,8 @@ class NodeManager(object):
             self.successflag = False
             print("view:", self.view)
             for node in self.committee_member:    
-                msg_obj = packet.Message("sendrequest", {"hash":payload, "address": (self.client.ip,self.client.port), "start": self.starttime})
+                msg_obj = packet.Message("sendrequest", 
+                  {"hash":payload, "address": (self.client.ip,self.client.port), "start": self.starttime})
                 msg_bytes = pickle.dumps(msg_obj)
                 self.client.sendrequest(self.server.socket, (node.ip, node.port), msg_bytes)
             # print "++++++++++++++sendrequest&tx++++++++++++++++"
@@ -975,7 +982,8 @@ class NodeManager(object):
             self.GST += 1
             self.starttime = int(time.time())
             for node in self.committee_member:    
-                msg_obj = packet.Message("sendrequest", {"hash":payload, "address": (self.client.ip,self.client.port), "start": self.starttime, "GST": self.GST})
+                msg_obj = packet.Message("sendrequest", 
+                  {"hash":payload, "address": (self.client.ip,self.client.port), "start": self.starttime, "GST": self.GST})
                 msg_bytes = pickle.dumps(msg_obj)
                 self.client.sendrequest(self.server.socket, (node.ip, node.port), msg_bytes)
             self.commitMessages = []

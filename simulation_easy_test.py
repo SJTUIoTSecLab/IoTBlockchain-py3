@@ -97,7 +97,7 @@ def simulate_tx(address, sender, receiver, amount):
         "amount": amount
     }
 
-    req = urllib.request.Request(url="http://" + address + "/transactions/new",
+    req = urllib.request.Request(url="http://" + address + "/transactions/new_easy",
                           headers={"Content-Type": "application/json"}, data=bytes(json.dumps(data),'utf8'))
     res_data = urllib.request.urlopen(req)
     res = res_data.read().decode('utf8')

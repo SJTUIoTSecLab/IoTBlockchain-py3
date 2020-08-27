@@ -147,6 +147,42 @@ class TxOutput(object):
         return output
 
 
+class Tx_easy(object):
+    def __init__(self, sender, receiver, amount, timestamp):
+        """
+
+        :param txid: <str> 交易id
+        :param vid: <str> 车辆注册id
+        """
+        self.amount = amount
+        self.sender = sender
+        self.receiver = receiver
+        self.timestamp = timestamp
+        self.txid = self.get_txid()
+
+    def get_txid(self):
+        value = str(self.timestamp) + str(self.amount) + self.sender + self.receiver
+        sha = hashlib.sha256(value.encode('utf8'))
+        return str(sha.hexdigest())
+
+    def get_hash(self):
+        sha = hashlib.sha256(self.__str__().encode('utf-8'))
+        return sha.hexdigest()
+
+    def json_output(self):
+        output = {
+            'txid': self.txid,
+            'timestamp': self.timestamp,
+            'sender': self.sender,
+            'receiver': self.receiver,
+            'amount': self.amount
+        }
+        return output
+
+    def __str__(self):
+        return json.dumps(self.json_output(), default=lambda obj: obj.__dict__, sort_keys=True, indent=4)
+
+
 class Tx_vid(object):
     def __init__(self, vid, timestamp):
         """

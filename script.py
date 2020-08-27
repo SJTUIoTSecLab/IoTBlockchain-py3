@@ -171,5 +171,5 @@ class Stack(object):
 
 
 def get_address_from_ripemd160(ripemd_hash):
-    Wallet.b58encode(unhexlify(ripemd_hash.decode('utf8')))
-    return Wallet.b58encode(unhexlify(ripemd_hash.decode('utf8')))
+    Wallet.b58encode(unhexlify(ripemd_hash))
+    return Wallet.b58encode(unhexlify(ripemd_hash))

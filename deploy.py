@@ -435,7 +435,6 @@ def block_info_app():
         'previous_hash': block.previous_hash,
         'timestamp': block.timestamp,
         'merkleroot': block.merkleroot,
-        'difficulty': block.difficulty,
         'nonce': block.nonce,
         'transactions': json_transaction
     }

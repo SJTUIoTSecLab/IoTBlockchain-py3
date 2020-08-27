@@ -26,6 +26,10 @@ python simulation.py
 
 Transactions (Internet of Vehicles) is simulated.
 
+Run ```simulation_easy_test.py``` instead if you have not get SUMO installed yet. It provides simulation of easy and rough transactions. 
+
+File ```simulation_test.py``` provides a better simulation of  transactions, which includes functions of UTXO, signature, etc. (Bug unfixed)
+
 ### Step 3: Check Simple Information
 
 Open your browser and you can visit the following address to :
@@ -60,9 +64,15 @@ Open your browser and you can visit the following address to :
 
 - http://127.0.0.1:5000/consensus_time_all : get the time for consensus of all views (main node only so far)
 
+- http://127.0.0.1:5002/block_time : get real time of all views (close to ```step``` of course)
+
+- http://127.0.0.1:5002/get_block_time?view=2 : get real time of a certain view (close to ```step``` of course)
+
 Or send a post request to the following address to :
 
 - http://127.0.0.1:5000/transactions/new : create a new transaction
+- http://127.0.0.1:5000/transactions/new_easy : create a new easy transaction
+- http://127.0.0.1:5000/transactions/new_vid or http://127.0.0.1:5000/transactions/new_report for other type of transactions (Internet of Vehicles, SUMO)
 
 ## Notes
 

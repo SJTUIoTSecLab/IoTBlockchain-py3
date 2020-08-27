@@ -31,7 +31,7 @@ class Blockchain(object):
         :param genisus_node: 判断是否是创世节点，如果是则读取本地（genisus_public.pem和genisus_private.pem）密钥对，
                             创始区块的第一笔交易就是奖励给genisus_public.pem
         """
-        self.difficulty = 4
+        # self.difficulty = 4
         self.current_transactions = [] #收集节点交换的交易
         self.received_transactions = [] #用户发送的交易
         self.send_transactions = [] # sendalltx时发送的交易
@@ -71,22 +71,20 @@ class Blockchain(object):
                                            previous_hash='00000000000000000000000000000000000000000000000000000000000000',
                                            timestamp=1496518102,
                                            merkleroot=merkleroot,
-                                           nonce=nonce,
-                                           difficulty=self.difficulty)
-        while genish_block_hash[0:self.difficulty] != '0' * self.difficulty:
-            genish_block_hash = calculate_hash(index=0,
-                                               previous_hash='00000000000000000000000000000000000000000000000000000000000000',
-                                               timestamp=1496518102,
-                                               merkleroot=merkleroot,
-                                               nonce=nonce,
-                                               difficulty=self.difficulty)
-            nonce += 1
+                                           nonce=nonce)
+        # while genish_block_hash[0:self.difficulty] != '0' * self.difficulty:
+        #     genish_block_hash = calculate_hash(index=0,
+        #                                        previous_hash='00000000000000000000000000000000000000000000000000000000000000',
+        #                                        timestamp=1496518102,
+        #                                        merkleroot=merkleroot,
+        #                                        nonce=nonce,
+        #                                        difficulty=self.difficulty)
+        #     nonce += 1
         genius_block = Block(index=0,
                              previous_hash='00000000000000000000000000000000000000000000000000000000000000',
                              timestamp=1496518102,
                              nonce=nonce,
-                             current_hash=genish_block_hash,
-                             difficulty=self.difficulty)
+                             current_hash=genish_block_hash)
         genius_block.merkleroot = merkleroot
         genius_block.transactions = transactions
 
@@ -104,7 +102,7 @@ class Blockchain(object):
         tx = Transaction([txin], [txoutput], int(time()))
         return tx
 
-    def generate_block(self, merkleroot, next_timestamp, next_nonce):
+    def generate_block(self, merkleroot, next_timestamp, next_nonce, view):
         """
         创建区块
         :param merkleroot: <str> 默克尔树根节点
@@ -114,15 +112,15 @@ class Blockchain(object):
         """
         previous_block = self.get_last_block()
         next_index = previous_block.index + 1
+        if next_index == view:
+            print('generate block')
         previous_hash = previous_block.current_hash
         next_block = Block(
             index=next_index,
             previous_hash=previous_hash,
             timestamp=next_timestamp,
             nonce=next_nonce,
-            current_hash=calculate_hash(next_index, previous_hash, next_timestamp, merkleroot, next_nonce,
-                                        self.difficulty),
-            difficulty=self.difficulty
+            current_hash=calculate_hash(next_index, previous_hash, next_timestamp, merkleroot, next_nonce),
         )
         next_block.merkleroot = merkleroot
 
@@ -315,6 +313,13 @@ class Blockchain(object):
         return tx
 
 
+    def new_easy_transaction(self, sender, receiver, amount):
+        tx = Tx_easy(sender, receiver, amount, int(time()))
+        # self.sign_transaction(tx, self.wallet.privkey)  # 签名Tx
+        self.received_transactions.append(tx)
+        return tx
+
+
     def new_vid_transaction(self, vid):
         tx = Tx_vid(vid, int(time()))
         # self.sign_transaction(tx, self.wallet.privkey)  # 签名Tx
@@ -468,16 +473,13 @@ class Blockchain(object):
             balance += txout.value
         return balance, unspent_txout_list
 
-    def do_mine(self, view):
+    def do_mine(self, view, time):
         """
         进行挖矿，验证当前节点收集的交易，并将有效交易打包成区块
 
         :return:
         """
         nonce = 0
-        # timestamp = int(time())
-        timestamp = view
-        # print('Minning a block...')
         new_block_found = False
         new_block_attempt = None
 
@@ -514,7 +516,7 @@ class Blockchain(object):
         # next_index = previous_block.index + 1
         # previous_hash = previous_block.current_hash
 
-        new_block_attempt = self.generate_block(merkleroot, timestamp, nonce)
+        new_block_attempt = self.generate_block(merkleroot, time, nonce, view)
         print("new block found")
         # end_timestamp = int(time())
         # cos_timestamp = end_timestamp - timestamp
@@ -526,11 +528,10 @@ class Blockchain(object):
         # 将所有交易保存成Merkle树
         new_block_attempt.merkleroot = merkleroot
 
-
         # db.write_to_db(self.wallet.address, new_block_attempt)
         # self.current_transactions = []
         # db.clear_unconfirmed_tx_from_disk(self.wallet.address)
-        # print new_block_attempt
+
         return new_block_attempt
 
     def get_last_block(self):
@@ -595,7 +596,6 @@ class Blockchain(object):
     def json_output(self):
         output = {
             'wallet_address': self.wallet.address,
-            'difficulty': self.difficulty,
             'chain': [block.json_output() for block in db.get_all_blocks(self.wallet.address)],
         }
         return output

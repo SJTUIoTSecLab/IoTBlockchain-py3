@@ -125,8 +125,8 @@ if __name__ == "__main__":
                     print("signed in rsu 3")
                     simulate_tx("127.0.0.1:5002", vid)
             if step % 2 == 0:
-                v1 = traci.edge.getLastStepMeanSpeed('m1')
-                v2 = traci.edge.getLastStepMeanSpeed('m4')
+                v1 = round(traci.edge.getLastStepMeanSpeed('m1'), 3)
+                v2 = round(traci.edge.getLastStepMeanSpeed('m4'), 3)
                 n1 = traci.edge.getLastStepVehicleNumber('m1')
                 n2 = traci.edge.getLastStepVehicleNumber('m4')
                 print("main street report :")
@@ -134,5 +134,5 @@ if __name__ == "__main__":
                 print('m4', v2, n2)
                 main_street_tx('127.0.0.1:5000', 'm1', v1, n1)
                 main_street_tx('127.0.0.1:5001', 'm4', v2, n2)
-            time.sleep(0.1)
+            time.sleep(1)
     traci.close()

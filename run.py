@@ -143,6 +143,29 @@ def new_transaction():
         return jsonify(response), 200
 
 
+@app.route('/transactions/new_easy', methods=['POST'])
+def new_easy_transaction():
+    values = request.get_json()
+    required = ['sender', 'receiver', 'amount']
+    if not all(k in values for k in required):
+        return 'Missing values', 400
+
+    # Create a new Transaction
+    new_tx = blockchain.new_easy_transaction(values['sender'], values['receiver'], values['amount'])
+
+    if new_tx:
+        output = {
+            'message': 'new transaction been created successfully!',
+            'received_transactions': [tx.json_output() for tx in blockchain.received_transactions]
+        }
+        json_output = json.dumps(output, indent=4)
+        return json_output, 200
+
+    else:
+        response = {'message': "Not enough funds!"}
+        return jsonify(response), 200
+
+
 @app.route('/transactions/new_vid', methods=['POST'])
 def new_vid_transaction():
     values = request.get_json()
@@ -259,6 +282,7 @@ def tx_in_block():
                 'vid': tx.vid
             }
             cnt += 1
+        
         elif isinstance(tx, Tx_report):
             tmp[str(cnt)] = {
                 'txid': tx.txid,
@@ -269,6 +293,48 @@ def tx_in_block():
                 'vehicleNum': tx.vehicleNum
             }
             cnt += 1
+        
+        elif isinstance(tx, Tx_easy):
+            tmp[str(cnt)] = {
+                'txid': tx.txid,
+                'sender': tx.sender,
+                'receiver': tx.receiver,
+                'amount': tx.amount,
+                'timestamp': tx.timestamp
+            }
+            cnt += 1
+
+        elif isinstance(tx, Transaction):
+            txins = tx.txins
+            txouts = tx.txouts
+            
+            from_addr = list()
+            to_addr = list()
+            amount = 0
+
+            for txin in txins:
+                if txin.prev_tx_out_idx != -1:
+                    address = Wallet.get_address(txin.pubkey)
+                    if address not in from_addr:
+                        from_addr.append(address)
+            
+            for txout in txouts:
+                value = txout.value
+                script_pub_key = txout.scriptPubKey
+                if len(script_pub_key) == 5:
+                    recv_addr = get_address_from_ripemd160(script_pub_key[2])
+                    to_addr.append({'receiver': recv_addr, 'value': value})
+            
+            tmp[str(cnt)] = {
+                'txid': tx.txid,
+                'senders': from_addr,
+                'receivers': to_addr,
+                'amount': amount,
+                'timestamp': tx.timestamp
+            }
+
+            cnt += 1
+            
 
     return json.dumps(tmp), 200
 
@@ -488,11 +554,48 @@ def block_info():
                 'meanSpeed': tx.meanSpeed,
                 'vehicleNum': tx.vehicleNum
             }
+        elif isinstance(tx, Tx_easy):
+            new_tx = {
+                'txid': tx.txid,
+                'sender': tx.sender,
+                'receiver': tx.receiver,
+                'amount': tx.amount,
+                'timestamp': tx.timestamp
+            }
+        elif isinstance(tx, Transaction):
+            txins = tx.txins
+            txouts = tx.txouts
+            
+            from_addr = list()
+            to_addr = list()
+            amount = 0
+
+            for txin in txins:
+                if txin.prev_tx_out_idx != -1:
+                    address = Wallet.get_address(txin.pubkey)
+                    if address not in from_addr:
+                        from_addr.append(address)
+            
+            for txout in txouts:
+                value = txout.value
+                script_pub_key = txout.scriptPubKey
+                if len(script_pub_key) == 5:
+                    recv_addr = get_address_from_ripemd160(script_pub_key[2])
+                    to_addr.append({'receiver': recv_addr, 'value': value})
+            
+            new_tx = {
+                'txid': tx.txid,
+                'senders': from_addr,
+                'receivers': to_addr,
+                'amount': amount,
+                'timestamp': tx.timestamp
+            }
+
         json_transaction.append(new_tx)
 
     response = {
         'index': block.index,
-        'view': block.timestamp,
+        'timestamp': block.timestamp,
         'current_hash': block.current_hash,
         'previous_hash': block.previous_hash,
         'merkleroot': block.merkleroot,
@@ -515,7 +618,7 @@ if __name__ == '__main__':
     else:
         genisus_node = False
 
-    node_manager = NodeManager('localhost', 0, genisus_node, True, False, 2)
+    node_manager = NodeManager('localhost', 0, genisus_node, is_committee_node=True, leader_shift=False, expected_client_num=2)
     blockchain = node_manager.blockchain
 
     print("Wallet address: %s" % blockchain.get_wallet_address())

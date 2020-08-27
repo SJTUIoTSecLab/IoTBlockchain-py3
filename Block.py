@@ -11,8 +11,7 @@ class Block(object):
             previous_hash,
             timestamp,
             nonce,
-            current_hash,
-            difficulty):
+            current_hash):
         """
         区块结构
         :param index: <int> 区块索引
@@ -20,7 +19,6 @@ class Block(object):
         :param timestamp: <str> 时间戳
         :param nonce: <str> 当前区块POW共识过程的随机数
         :param current_hash: <str> 当前区块的目标哈希值
-        :param difficulty: <int> 难度系数
         """
         # header
         self.index = index
@@ -28,7 +26,6 @@ class Block(object):
         self.timestamp = timestamp
         self.nonce = nonce
         self.current_hash = current_hash
-        self.difficulty = difficulty
         self.merkleroot = None
 
         # body
