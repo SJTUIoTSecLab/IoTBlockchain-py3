@@ -53,7 +53,7 @@ Open your browser and you can visit the following address to :
   e.g.
 
   ```
-  {"0": {"txid": "c8a8019259f6779b274206e8a9da0c7821003009165a48eb2d60bec7807ad09b", "timestamp": "2020-07-31 20:53:36", "type": "vid", "vid": "a3.0"}, "1": {"txid": "8d9a1dada6191edd5f5d379274e0dba4432206da86dfd227bebb20eb7f10dda0", "timestamp": "2020-07-31 20:53:43", "type": "report", "edgeId": "m1", "meanSpeed": 20.844183340424205, "vehicleNum": 2}}
+  {"0": {"txid": "c8a8019259f6779b274206e8a9da0c7821003009165a48eb2d60bec7807ad09b", "timestamp": "2020-07-31 20:53:36", "type": "vid", "vid": "a3.0"}, "1": {"txid": "8d9a1dada6191edd5f5d379274e0dba4432206da86dfd227bebb20eb7f10dda0", "timestamp": "2020-07-31 20:53:43", "type": "report", "edgeId": "m1", "meanSpeed": 20.844, "vehicleNum": 2}}
   ```
 
 - http://127.0.0.1:5002/asyn_node?view=1 : get the rate of asynchronous nodes of a certain view
@@ -61,6 +61,14 @@ Open your browser and you can visit the following address to :
 - http://127.0.0.1:5002/asyn_node_all : get the rate of asynchronous nodes of all views
 
 - http://127.0.0.1:5000/consensus_time?view=1 : get the time for consensus of a certain view (main node only so far)
+
+  e.g.
+
+  ```
+  {"time":[0.074,6.088],"view":1}
+  ```
+
+  注：收集完交易时记录时间，发送新一轮request时记录时间。"time" list 中的第一项是从【交易收集完】到【主节点收到法定个数个reply，共识达成】的时间；第二项是从【主节点send request，发起新一轮共识】到【主节点收到法定个数个reply，共识达成】的时间，包括了收集交易的时间，包含了时间窗口。由于有主节点尚未收集完交易，其他节点已经出完块并且完成hash共识并发送reply的情况，因此偶尔会出现第一项大得与设定的每轮间隔时间step相近的情况；这是因为收集完交易记录的时间仍是上一轮的。
 
 - http://127.0.0.1:5000/consensus_time_all : get the time for consensus of all views (main node only so far)
 

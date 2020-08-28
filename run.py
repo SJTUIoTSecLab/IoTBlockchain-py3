@@ -153,17 +153,12 @@ def new_easy_transaction():
     # Create a new Transaction
     new_tx = blockchain.new_easy_transaction(values['sender'], values['receiver'], values['amount'])
 
-    if new_tx:
-        output = {
-            'message': 'new transaction been created successfully!',
-            'received_transactions': [tx.json_output() for tx in blockchain.received_transactions]
-        }
-        json_output = json.dumps(output, indent=4)
-        return json_output, 200
-
-    else:
-        response = {'message': "Not enough funds!"}
-        return jsonify(response), 200
+    output = {
+        'message': 'new transaction been created successfully!',
+        'received_transactions': [tx.json_output() for tx in blockchain.received_transactions]
+    }
+    json_output = json.dumps(output, indent=4)
+    return json_output, 200
 
 
 @app.route('/transactions/new_vid', methods=['POST'])
@@ -176,17 +171,12 @@ def new_vid_transaction():
     # Create a new Transaction
     new_tx = blockchain.new_vid_transaction(values['vid'])
 
-    if new_tx:
-        output = {
-            'message': 'new transaction been created successfully!',
-            'received_transactions': [tx.json_output() for tx in blockchain.received_transactions]
-        }
-        json_output = json.dumps(output, indent=4)
-        return json_output, 200
-
-    else:
-        response = {'message': "Not enough funds!"}
-        return jsonify(response), 200
+    output = {
+        'message': 'new transaction been created successfully!',
+        'received_transactions': [tx.json_output() for tx in blockchain.received_transactions]
+    }
+    json_output = json.dumps(output, indent=4)
+    return json_output, 200
 
 
 @app.route('/transactions/new_report', methods=['POST'])
@@ -199,17 +189,12 @@ def new_report_tx():
     # Create a new Transaction
     new_tx = blockchain.new_report_tx(values['edgeId'], values['meanSpeed'], values['vehicleNum'])
 
-    if new_tx:
-        output = {
-            'message': 'new transaction been created successfully!',
-            'received_transactions': [tx.json_output() for tx in blockchain.received_transactions]
-        }
-        json_output = json.dumps(output, indent=4)
-        return json_output, 200
-
-    else:
-        response = {'message': "Not enough funds!"}
-        return jsonify(response), 200
+    output = {
+        'message': 'new transaction been created successfully!',
+        'received_transactions': [tx.json_output() for tx in blockchain.received_transactions]
+    }
+    json_output = json.dumps(output, indent=4)
+    return json_output, 200
 
 
 @app.route('/balance', methods=['GET'])

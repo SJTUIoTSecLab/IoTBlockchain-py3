@@ -240,7 +240,9 @@ class ProcessMessages(socketserver.BaseRequestHandler):
         if payload['view'] == self.server.node_manager.view:
             self.server.node_manager.replyMessage += 1
         if (self.server.node_manager.replyMessage > old_div(self.server.node_manager.numSeedNode, 2)) and (not self.server.node_manager.successflag):
-            self.server.node_manager.consensus[payload['view']] = round(time.time() - self.server.node_manager.timetmp, 3)
+            tt = time.time()
+            self.server.node_manager.consensus[payload['view']] = [round(tt - self.server.node_manager.timetmp, 3),
+                                                                 round(tt - self.server.node_manager.starttime, 3)]
             self.server.node_manager.successflag = True
             self.server.node_manager.replyMessage = 0
             print("next")
@@ -1066,14 +1068,14 @@ class NodeManager(object):
             msg_bytes = pickle.dumps(msg_obj)
             self.client.sendblockhash(self.server.socket, (node.ip, node.port), msg_bytes)
             # error test
-            # if self.view == 4 and self.errorflag:
+            # if self.view == 3 and self.errorflag:
             #     self.errorflag = False
             #     break
         if self.is_primary:
             self.replyflag = True
             self.replytime = int(time.time())
         # error test
-        # if self.view == 3 and not self.is_primary:
+        # if self.view == 4 and self.is_primary:
         #     self.blockcache.current_hash += '1'
         print("currunt hash :", self.blockcache.current_hash)
             
