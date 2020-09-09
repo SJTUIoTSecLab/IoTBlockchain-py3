@@ -1,6 +1,32 @@
 # coding=utf-8
-from builtins import object
 import json
+
+#广播部分
+class broadcast(object):
+    def __init__(self,message,tree,dictlsp):
+        self.message=message
+        self.tree=tree
+        self.dictlsp=dictlsp
+
+class askinf(object):
+    def __init__(self,sorce1,sorce2,num):#该信息中附带源节点地址
+        self.sorceip=sorce1
+        self.sorceport=sorce2
+        self.num=num
+
+class lsp(object):#打包一个lsp
+    def __init__(self,table):
+	#只用这一个
+	    self.lsp=table.lsp
+
+class Version(object):
+    def __init__(self, version, timestamp, from_id, to_id, best_height,distance):
+        self.version = version
+        self.timestamp = timestamp
+        self.from_id = from_id
+        self.to_id = to_id
+        self.best_height = best_height
+        self.distance=distance
 
 
 class Message(object):
@@ -23,14 +49,6 @@ class MessageTime(object):
         self.payload = payload
         self.time = time
 
-
-class Version(object):
-    def __init__(self, version, timestamp, from_id, to_id, best_height):
-        self.version = version
-        self.timestamp = timestamp
-        self.from_id = from_id
-        self.to_id = to_id
-        self.best_height = best_height
 
 
 class Verack(object):

@@ -30,20 +30,23 @@ def run():
 
     node1_seeds = [
         {"node_id": node2["node_id"], "ip": node2["ip"], "port": node2["port"]},
-        {"node_id": node3["node_id"], "ip": node3["ip"], "port": node3["port"]}
+        {"node_id": node3["node_id"], "ip": node3["ip"], "port": node3["port"]},
+        {"node_id": node1["node_id"], "ip": node1["ip"], "port": node1["port"]}
     ]
     print(node1_seeds)
     bootstrap("127.0.0.1:5000", node1_seeds)
 
     node2_seeds = [
         {"node_id": node3["node_id"], "ip": node3["ip"], "port": node3["port"]},
-        {"node_id": node1["node_id"], "ip": node1["ip"], "port": node1["port"]}
+        {"node_id": node1["node_id"], "ip": node1["ip"], "port": node1["port"]},
+        {"node_id": node2["node_id"], "ip": node2["ip"], "port": node2["port"]}
     ]
     bootstrap("127.0.0.1:5001", node2_seeds)
 
     node3_seeds = [
         {"node_id": node1["node_id"], "ip": node1["ip"], "port": node1["port"]},
-        {"node_id": node2["node_id"], "ip": node2["ip"], "port": node2["port"]}
+        {"node_id": node2["node_id"], "ip": node2["ip"], "port": node2["port"]},
+        {"node_id": node3["node_id"], "ip": node3["ip"], "port": node3["port"]}
     ]
     bootstrap("127.0.0.1:5002", node3_seeds)
     print("ok")
