@@ -134,7 +134,7 @@ class ProcessMessages(socketserver.BaseRequestHandler):
         
     def handle_floodAtLeaf(self,payload):
         message=payload
-        self.server.node_manager.tablsp.addmessage(message)
+        #self.server.node_manager.tablsp.addmessage(message)
         #对广播解包
         #print("message[1]=",message[1])
         ip=self.server.node_manager.client.ip
@@ -237,7 +237,7 @@ list(source_node))#向自己路由表中的节点发送,需要在其他节点
             #取出后清空tablsp.message
                        #print("message stored in tablsp=",
                              #    msg_bytes)
-                       print("enter handle_resp broadcast")              
+                       print("enter handle_resp broadcast with message in broadcast:",self.server.node_manager.tablsp.message)              
                        self.server.node_manager.broadcast(msg_bytes,
                                              tree,dictlsp)
             #告诉其他节点要传播的信息以及最小生成树
@@ -437,6 +437,7 @@ list(source_node))#向自己路由表中的节点发送,需要在其他节点
                 self.server.node_manager.sendrequestmessage(payload)
                 self.server.node_manager.is_primary = False
             else:
+                print("ready to sendrequest")
                 self.server.node_manager.sendrequest(payload['blockhash'])
 
     def handle_sendrequestmessage(self,payload):
