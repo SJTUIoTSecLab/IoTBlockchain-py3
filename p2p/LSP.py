@@ -24,6 +24,8 @@ class LSP(object):
         self.grouper=[]#根节点特有的储存组员信息
         self.tree=[]
         self.messagestart=[]#用里面的信息标识该节点是否为发起节点
+        self.inreceived_kids=[]#记录未收到了broadcast的子节点
+
     
 
 
@@ -229,4 +231,18 @@ class LSP(object):
   
     def addmessage(self,message):
         self.message.append(message)
+
+    def find_others_kids(self,node):
+        for i in range(len(self.lspdict)):
+            mynum=i
+            if node==lspdict[i]:
+                break
+        kids=[]
+        for i in range(len(lspdict)):  
+            #找到自己的子节点编号
+            if d[mynum][i]!=0 and d[mynum][i]!=10000:
+                #i是子节点
+                kids.append(lspdict[i])
+        return kids
+        
         

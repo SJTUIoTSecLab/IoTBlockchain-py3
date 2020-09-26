@@ -2,8 +2,12 @@
 import json
 
 #广播部分
+class feedback(object):
+    def __init__(self,sub_address):
+        self.sub_address=sub_address
 class broadcast(object):
-    def __init__(self,message,tree,dictlsp):
+    def __init__(self,message,tree,dictlsp,address):
+        self.address=address
         self.message=message
         self.tree=tree
         self.dictlsp=dictlsp

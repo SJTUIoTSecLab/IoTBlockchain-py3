@@ -109,6 +109,8 @@ class ProcessMessages(socketserver.BaseRequestHandler):
             self.handle_floodAtLeaf(payload)
         elif command == "tellDistriction":#处理分区
             self.handle_tellDistriction(payload)
+        elif command == "feedback"#广播反馈
+            self.handle_feedback(payload)
         #elif command == "generateRoot"#生成根时各个节点共享根的信息
 #####　 self.handle_generateRoot(payload)
 
@@ -118,7 +120,9 @@ class ProcessMessages(socketserver.BaseRequestHandler):
 
    # def handle_generateRoot(self,payload):#生成时间隔一点时间
 #    self.server.node_manager.tablsp.rootList=payload
-
+    def handle_feedback(self,payload):
+        sub_address=payload.sub_address
+        self.server.node_manager.cancelkid(sub_address)
 
     def handle_tellDistriction(self,payload):
         num=payload[0]
@@ -250,17 +254,21 @@ list(source_node))#向自己路由表中的节点发送,需要在其他节点
     def handle_BROADCAST(self,payload):#收到了广播，按指派的路由表广播
         #if 是测试用的
         #if not self.server.node_manager.tablsp.message:
-            
+            #########
+payload = packet.Ping(self.node_id, server_node_id)
+        msg_obj = packet.Message("ping", payload)
+#############
             tree=payload.tree
-            message=payload.message#todo
+            message=payload.message
             dictlsp=payload.dictlsp
+            address=payload.address
+            #告诉发送节点自己收到了broadcast
+            self.server.node_manager.feedback(address)#todo
                 #将广播信息计入本节点
            # print ("here port:")
            # print (self.server.node_manager.tablsp.basetable[1])
-            port=self.server.node_manager.tablsp.basetable[1]
            # print ("here ip:")
            # print (self.server.node_manager.tablsp.basetable[0])
-            ip=self.server.node_manager.tablsp.basetable[0]
             #self.server.node_manager.tablsp.addmessage(message)
            # print ("message in broadcast",self.server.node_manager.tablsp.message)
             #print ("----------------")
@@ -766,6 +774,9 @@ class Node(object):
 
 
 ###广播部份
+    def feedback(self,sock,target_node_address,message):#反馈信息表示自己收到了broadcast
+        sock.sendto(zlib.compress(message),target_node_address)
+        
     def respoflspr(self,sock,target_node_address,message):#以SOCK为通信端口，向target发送message(lsp)
         sock.sendto(zlib.compress(message),target_node_address)
 
@@ -1451,6 +1462,9 @@ class NodeManager(object):
   #  def self.generateRoot(self,rootList)
    #     payload=(rootList)
     #    msg_obj=packet.Message("generateRoot",payload)
+    def cancelkid(self,sub_address):
+        self.tablsp.inreceived_kids.remove(sub_address)
+        
   
     def tellDistriction(self,num,node):#num为该端口区号,node为遍历的根节点
         payload=(num,tuple(self.tablsp.basetable))
@@ -1505,35 +1519,62 @@ class NodeManager(object):
 	                           self.tablsp.neighbourport[x])
             self.client.asklsp(self.server.socket,target_node_address,msg_bytes)
 
-
+    def feedback(self,target_node_address):
+            port=self.server.node_manager.tablsp.basetable[1]
+            ip=self.server.node_manager.tablsp.basetable[0]
+            sub_address=(ip,port)
+            payload=packet.feedback(sub_address)
+            msg_obj=packet.Message("feedback",payload)
+            msg_bytes = pickle.dumps(msg_obj)
+            self.client.feedback(self.server.socket,
+                        target_node_address,msg_bytes)
+            
+            
     def broadcast(self,message,tree,dictlsp):
         
 	
-            #print ("mark dictlsp")
-            #print (dictlsp)
             child=self.tablsp.findkids(dictlsp,tree)#先用这个数组测试功能
-            tree=self.tablsp.deletenode(tree,dictlsp)#删除该节点作为子节点的子节点的情况
-           # print ("mark 删除后的树")
-            #print (tree)
-            #print
-            payload=packet.broadcast(message,tree,dictlsp)
+            tree=self.tablsp.deletenode(tree,dictlsp)#删除该节点作为子节点的子节点的情况       
+            self.tablsp.tree=tree
+            self.tablsp.dictlsp=dictlsp
+            address=(self.tablsp.basetable[0],self.tablsp.basetable[1])
+            payload=packet.broadcast(message,tree,dictlsp,address)
             msg_obj=packet.Message("broadcast",payload)
             msg_bytes=pickle.dumps(msg_obj)
             #print("--in broadcast--",message)
             x=0 #用于记录这个路由的位置
             k=len(child)#k=0时代表是叶子节点,叶子节点进行一次泛洪
+            self.tablsp.inreceived_kids=[]#清空
+            sock=self.server.socket
+            for i in range(0,k):
+                self.tablsp.inreceived_kids.append((child[i][0],child[i][1]))#初始化未收到列表收到一个删除一个序号
         #根据Id找到对应的路由信息
 	#找到对应的ip,port
             for i in range(k):
                 ip=child[i][0]
                 port=child[i][1]
                 target_node_address=(ip,port)
-            #按路由发送广波
-                sock=self.server.socket
+                
                 print("+++i've broadcast+++")
                 self.client.broadcast(sock,target_node_address,msg_bytes)
             if k==0:
                 self.floodAtLeaf(message)#进行泛洪
+             #等待一段时间后对未确认收到广播的节点的子节点发送广播
+   
+            time.sleep(0.4)
+            for node in self.tablsp.inreceived_kids:
+                    node_kids=self.tablsp.find_others_kids(node)
+                    for i in range(len(node_kids)):
+                       ip=child[i][0]
+                       port=child[i][1]
+                       target_node_address=(ip,port)
+                       print("+++i've broadcast for the disconnect+++")
+                       self.client.broadcast(sock,target_node_address,msg_bytes)
+                       
+                    
+            
+            
+            
 
     def floodAtLeaf(self,message):
         payload=message
