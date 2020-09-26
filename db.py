@@ -136,6 +136,33 @@ def write_to_db(wallet_address, block):
     print("write to db")
 
 
+def write_failhash_to_db(wallet_address, view, failhash):
+    if not os.path.isdir(wallet_address):
+        os.mkdir(wallet_address)
+    cf = configparser.ConfigParser()
+    cf.read(wallet_address + '/IoTBlockchain.conf')
+
+    block_height = "1"
+    try:
+        block_height = cf.get('meta', 'block_height')
+    except configparser.NoSectionError as e:
+        cf.add_section('meta')
+        cf.set('meta', 'block_height', block_height)
+
+    try:
+        cf.get('failhash', str(view))
+    except configparser.NoSectionError as e:
+        cf.add_section('failhash')
+    except configparser.NoOptionError as e:
+        cf.set('meta', 'block_height', str(1 + int(block_height)))
+
+    cf.set('failhash', str(view), str(failhash))
+
+    with open(wallet_address + '/IoTBlockchain.conf', 'w+') as f:
+        cf.write(f)
+    
+    print("write failhash to db")
+
 def get_block_hash(wallet_address, index):
     cf = configparser.ConfigParser()
     cf.read(wallet_address + '/IoTBlockchain.conf')

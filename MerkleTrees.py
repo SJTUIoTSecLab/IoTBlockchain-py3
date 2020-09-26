@@ -29,9 +29,9 @@ class MerkleTrees(object):
                 else:
                     right_leaf = transaction_list[index]
 
-                if isinstance(left_leaf, Transaction) or isinstance(left_leaf, Tx_vid) or isinstance(left_leaf, Tx_report) or isinstance(left_leaf, Tx_easy):
+                if isinstance(left_leaf, (Transaction, Tx_vid, Tx_report, Tx_easy)):
                     left_leaf = left_leaf.txid
-                if isinstance(right_leaf, Transaction) or isinstance(right_leaf, Tx_vid) or isinstance(right_leaf, Tx_report) or isinstance(right_leaf, Tx_easy):
+                if isinstance(right_leaf, (Transaction, Tx_vid, Tx_report, Tx_easy)):
                     right_leaf = right_leaf.txid
 
                 left_leaf_hash = hashlib.sha256(left_leaf.encode("utf8")).hexdigest()  # 左边叶子节点的哈希值
@@ -47,7 +47,7 @@ class MerkleTrees(object):
             self.create_tree()
         else:
             root_leaf = transaction_list[0]
-            if isinstance(root_leaf, Transaction) or isinstance(root_leaf, Tx_vid) or isinstance(root_leaf, Tx_report) or isinstance(root_leaf, Tx_easy):
+            if isinstance(root_leaf, (Transaction, Tx_vid, Tx_report, Tx_easy)):
                 root_leaf = root_leaf.txid
             else:
                 root_leaf = root_leaf

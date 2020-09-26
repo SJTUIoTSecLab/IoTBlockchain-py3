@@ -41,6 +41,7 @@ class Blockchain(object):
         self.candidate_blocks = {}
         self.prepareMessages = []
         self.commitMessages = []
+        self.lasthash = [0, 0]
 
 
     def get_genisus_pubkey(self):
@@ -125,6 +126,29 @@ class Blockchain(object):
         next_block.merkleroot = merkleroot
 
         return next_block
+
+
+    def generate_block_by_request_message(self, merkleroot, next_timestamp, next_nonce, view):
+        """
+        创建区块
+        :param merkleroot: <str> 默克尔树根节点
+        :param next_timestamp:
+        :param next_nonce:
+        :return:
+        """
+        next_index = view
+        previous_hash = self.lasthash[1]
+        next_block = Block(
+            index=next_index,
+            previous_hash=previous_hash,
+            timestamp=next_timestamp,
+            nonce=next_nonce,
+            current_hash=calculate_hash(next_index, previous_hash, next_timestamp, merkleroot, next_nonce),
+        )
+        next_block.merkleroot = merkleroot
+
+        return next_block
+
 
     def trimmed_copy_tx(self, tx):
         """
@@ -516,7 +540,8 @@ class Blockchain(object):
         # next_index = previous_block.index + 1
         # previous_hash = previous_block.current_hash
 
-        new_block_attempt = self.generate_block(merkleroot, time, nonce, view)
+        # new_block_attempt = self.generate_block(merkleroot, time, nonce, view)
+        new_block_attempt = self.generate_block_by_request_message(merkleroot, time, nonce, view)
         print("new block found")
         # end_timestamp = int(time())
         # cos_timestamp = end_timestamp - timestamp

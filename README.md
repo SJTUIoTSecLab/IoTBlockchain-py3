@@ -106,5 +106,5 @@ Or send a post request to the following address to :
 
 ### 重要参数设置
 
-- 时间窗口初始值 : `p2p > node.py > NodeManager > _init_ > self.GST = 5`
-- 每轮共识开始时间间隔 : `p2p > node.py > NodeManager > _init_ > self.step = 10`
+- 时间窗口初始值 : `p2p > node.py > NodeManager > _init_ > self.GST = 1`
+- 每轮共识开始时间间隔 : `p2p > node.py > NodeManager > _init_ > self.step = 5`
