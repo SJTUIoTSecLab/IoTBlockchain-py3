@@ -8,6 +8,7 @@ import json
 import random
 import time
 import urllib.request, urllib.error, urllib.parse
+import pickle
 
 
 import os
@@ -82,16 +83,18 @@ def main_street_tx(address, edgeId, meanSpeed, num):
 
 def prepare_nodes():
     node = list()
-    for i in range(10):
+    for i in range(5):
         node.append(get_node_info("127.0.0.1:500" + str(i)))
         print('node', i+1)
     seeds = [
-        {"node_id": node[i]["node_id"], "ip": node[i]["ip"], "port": node[i]["port"]} for i in range(10)
+        {"node_id": node[i]["node_id"], "ip": node[i]["ip"], "port": node[i]["port"]} for i in range(5)
     ]
     for i in range(10):
         tmp = seeds[0]
         del seeds[0]
         bootstrap("127.0.0.1:500"+str(i), seeds)
+        with open(node[i]["wallet"]+'/seeds.data', 'wb') as f:
+            pickle.dump(seeds, f)       
         seeds.append(tmp)
     print("ok")
     time.sleep(1)

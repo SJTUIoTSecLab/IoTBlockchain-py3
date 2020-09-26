@@ -13,7 +13,7 @@ import db
 from p2p.node import NodeManager, Node
 from script import Script, get_address_from_ripemd160
 from wallet import Wallet
-from transaction import *
+from transaction import Transaction, Tx_vid, Tx_report, Tx_easy
 
 try:
     from urllib.parse import urlparse
@@ -88,6 +88,25 @@ def bootstrap():
     for seed in seeds:
         seed_nodes.append(Node(seed['ip'], seed['port'], seed['node_id']))
     node_manager.bootstrap(seed_nodes)
+
+    all_nodes = node_manager.buckets.get_all_nodes()
+    output = json.dumps(all_nodes, default=lambda obj: obj.__dict__, indent=4)
+    return output, 200
+
+
+@app.route('/bootstrap2', methods=['POST'])
+def bootstrap2():
+    values = request.get_json()
+    required = ['seeds']
+    if not all(k in values for k in required):
+        return 'Missing values', 400
+    seeds = values['seeds']
+    # print json.dumps(seeds, default=lambda obj: obj.__dict__, indent=4)
+    seed_nodes = list()
+    for seed in seeds:
+        seed_nodes.append(Node(seed['ip'], seed['port'], seed['node_id']))
+    # node_manager.bootstrap(seed_nodes)
+    node_manager.restart_bootstrap(seed_nodes)
 
     all_nodes = node_manager.buckets.get_all_nodes()
     output = json.dumps(all_nodes, default=lambda obj: obj.__dict__, indent=4)
@@ -603,9 +622,10 @@ if __name__ == '__main__':
     else:
         genisus_node = False
 
-    node_manager = NodeManager('localhost', 0, genisus_node, is_committee_node=True, leader_shift=False, expected_client_num=2)
+    node_manager = NodeManager('localhost', port, genisus_node, parse=port, is_committee_node=True, leader_shift=False, expected_client_num=2)
     blockchain = node_manager.blockchain
+    address = blockchain.get_wallet_address()
 
-    print("Wallet address: %s" % blockchain.get_wallet_address())
+    print("Wallet address: %s" % address)
 
     app.run(host='0.0.0.0', port=port)

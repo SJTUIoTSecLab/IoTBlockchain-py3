@@ -25,40 +25,29 @@ def bootstrap(address, seeds):
 
 
 def run():
-    node1 = get_node_info("127.0.0.1:5000")
-    node2 = get_node_info("127.0.0.1:5001")
-    node3 = get_node_info("127.0.0.1:5002")
-
-    node1_seeds = [
-        {"node_id": node2["node_id"], "ip": node2["ip"], "port": node2["port"]},
-        {"node_id": node3["node_id"], "ip": node3["ip"], "port": node3["port"]}
+    node = list()
+    for i in range(5):
+        node.append(get_node_info("127.0.0.1:500" + str(i)))
+        print('node', i+1)
+    seeds = [
+        {"node_id": node[i]["node_id"], "ip": node[i]["ip"], "port": node[i]["port"]} for i in range(5)
     ]
-    print(node1_seeds)
-    with open(node1["wallet"]+'/seeds.data', 'wb') as f:
-        pickle.dump(node1_seeds, f)
-    bootstrap("127.0.0.1:5000", node1_seeds)
-
-    node2_seeds = [
-        {"node_id": node3["node_id"], "ip": node3["ip"], "port": node3["port"]},
-        {"node_id": node1["node_id"], "ip": node1["ip"], "port": node1["port"]}
-    ]
-    with open(node2["wallet"]+'/seeds.data', 'wb') as f:
-        pickle.dump(node2_seeds, f)
-    bootstrap("127.0.0.1:5001", node2_seeds)
-
-    node3_seeds = [
-        {"node_id": node1["node_id"], "ip": node1["ip"], "port": node1["port"]},
-        {"node_id": node2["node_id"], "ip": node2["ip"], "port": node2["port"]}
-    ]
-    with open(node3["wallet"]+'/seeds.data', 'wb') as f:
-        pickle.dump(node3_seeds, f)
-    bootstrap("127.0.0.1:5002", node3_seeds)
+    for i in range(5):
+        tmp = seeds[0]
+        del seeds[0]
+        bootstrap("127.0.0.1:500"+str(i), seeds)
+        with open(node[i]["wallet"]+'/seeds.data', 'wb') as f:
+            pickle.dump(seeds, f)       
+        seeds.append(tmp)
     print("ok")
     time.sleep(1)
 
-    node1_wallet = node1["wallet"]
-    node2_wallet = node2["wallet"]
-    node3_wallet = node3["wallet"]
+    node1_wallet = node[0]["wallet"]
+    node2_wallet = node[1]["wallet"]
+    node3_wallet = node[2]["wallet"]
+    node4_wallet = node[3]["wallet"]
+    node5_wallet = node[4]["wallet"]
+
     
     while True:
         # node1 发送给node2 node3

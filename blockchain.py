@@ -25,7 +25,7 @@ except ImportError:
 
 
 class Blockchain(object):
-    def __init__(self, genisus_node=False):
+    def __init__(self, genisus_node=False, parse=5001):
         """
 
         :param genisus_node: 判断是否是创世节点，如果是则读取本地（genisus_public.pem和genisus_private.pem）密钥对，
@@ -35,7 +35,7 @@ class Blockchain(object):
         self.current_transactions = [] #收集节点交换的交易
         self.received_transactions = [] #用户发送的交易
         self.send_transactions = [] # sendalltx时发送的交易
-        self.wallet = wallet.Wallet(genisus_node)
+        self.wallet = wallet.Wallet(genisus_node, parse)
         genius_block = self.get_genius_block()  # 创世区块
         db.write_to_db(self.wallet.address, genius_block)
         self.candidate_blocks = {}

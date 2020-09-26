@@ -62,7 +62,7 @@ Open your browser and you can visit the following address to :
 	{"time":[0.074,6.088],"view":1}
 	```
 
-  注：收集完交易时记录时间，发送新一轮request时记录时间。"time" list 中的第一项是从【交易收集完】到【主节点收到法定个数个reply，共识达成】的时间；第二项是从【主节点send request，发起新一轮共识】到【主节点收到法定个数个reply，共识达成】的时间，包括了收集交易的时间，包含了时间窗口。由于有主节点尚未收集完交易，其他节点已经出完块并且完成hash共识并发送reply的情况，因此偶尔会出现第一项大得与设定的每轮间隔时间step相近的情况；这是因为收集完交易记录的时间仍是上一轮的。
+  注：收集完交易时记录时间，发送新一轮request时记录时间。"time" list 中的第一项是从【交易收集完】到【主节点收到法定个数个reply，共识达成】的时间；第二项是从【主节点send request，发起新一轮共识】到【主节点收到法定个数个reply，共识达成】的时间，包括了收集交易的时间，包含了时间窗口。
 
 - http://127.0.0.1:5000/consensus_time_all : get the time for consensus of all views (main node only so far)
 
@@ -108,3 +108,9 @@ Or send a post request to the following address to :
 
 - 时间窗口初始值 : `p2p > node.py > NodeManager > _init_ > self.GST = 1`
 - 每轮共识开始时间间隔 : `p2p > node.py > NodeManager > _init_ > self.step = 5`
+
+### Restart
+
+节点掉线后再重新启动节点`python run.py -p 5001`
+
+重启后立即运行`python restart.py -p 5001`进行恢复

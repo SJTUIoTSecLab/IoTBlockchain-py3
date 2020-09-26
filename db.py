@@ -105,6 +105,23 @@ def clear_unconfirmed_tx_from_disk(wallet_address):
         cf.write(f)
 
 
+def write_node_id_to_db(wallet_address, id):
+    if not os.path.isdir(wallet_address):
+        os.mkdir(wallet_address)
+    cf = configparser.ConfigParser()
+    cf.read(wallet_address + '/IoTBlockchain.conf')
+
+    try:
+        cf.get('meta', 'node_id')
+    except configparser.NoSectionError as e:
+        cf.set('meta', 'node_id', id)
+
+    with open(wallet_address + '/IoTBlockchain.conf', 'w+') as f:
+        cf.write(f)
+    
+    print("write node_id to db")
+
+
 def write_to_db(wallet_address, block):
     if not os.path.isdir(wallet_address):
         os.mkdir(wallet_address)

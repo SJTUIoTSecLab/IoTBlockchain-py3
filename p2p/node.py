@@ -12,6 +12,8 @@ import socketserver
 import pickle
 import threading
 import random
+import os
+import configparser
 
 from Block import Block
 
@@ -73,6 +75,8 @@ class ProcessMessages(socketserver.BaseRequestHandler):
             self.handle_sendrequest(payload)
         elif command == "sendtx":
             self.handle_sendtx(payload)
+        elif command == "restart":
+            self.handle_restart(payload)
         elif command == "sendalltx":
             self.handle_sendalltx(payload)
         elif command == "sendblockhash":
@@ -156,6 +160,15 @@ class ProcessMessages(socketserver.BaseRequestHandler):
         key = payload.key
         value = payload.value
         self.server.node_manager.data[str(key)] = value
+
+    def handle_restart(self, payload):
+        print("---------------handle restart-----------------")
+        print(payload[0])
+        for node in self.server.node_manager.committee_member:
+            if node.node_id == int(payload[0]):
+                node.ip = payload[1][0]
+                node.port = payload[1][1]
+                break
 
     def handle_sendtx(self, payload):
         # new_tx = payload
@@ -296,11 +309,6 @@ class ProcessMessages(socketserver.BaseRequestHandler):
                 # print "transaction list clear"
                 # time.sleep(15)
             self.server.node_manager.view += 1
-            if self.server.node_manager.view == payload['newview']:
-                print('view check success')
-            else:
-                print('view check fail')
-                self.server.node_manager.view = payload['newview']
             self.server.node_manager.blockchain.lasthash = [payload['newview']-1, payload['hash']]
             # self.server.node_manager.blockchain.send_transactions = deepcopy(self.server.node_manager.blockchain.received_transactions)
             self.server.node_manager.blockchain.send_transactions.clear()
@@ -336,6 +344,18 @@ class ProcessMessages(socketserver.BaseRequestHandler):
                 self.server.node_manager.sendalltx(self.server.node_manager.blockchain.send_transactions)
                 self.server.node_manager.startflag = True
         self.server.node_manager.replyflag = False
+        if payload["newview"] > self.server.node_manager.view:
+            print("view fall behind")
+            cf = configparser.ConfigParser()
+            cf.read(self.server.node_manager.blockchain.get_wallet_address() + '/IoTBlockchain.conf')
+            for i in range(1, payload['newview']):
+                try:
+                    cf.get('index', str(i))
+                except configparser.NoOptionError as e:
+                    self.server.node_manager.failhash.append(i)
+            print("view check done")
+            print(self.server.node_manager.failhash)
+            self.server.node_manager.view = payload["newview"]
 
     def handle_sendoff(self,payload):
         pass
@@ -573,6 +593,9 @@ class Node(object):
     def sendtx(self, sock, target_node_address, message):
         ret = sock.sendto(zlib.compress(message), target_node_address)
 
+    def sendrestart(self, sock, target_node_address, message):
+        ret = sock.sendto(zlib.compress(message), target_node_address)
+
     def sendalltx(self, sock, target_node_address, message):
         ret = sock.sendto(zlib.compress(message), target_node_address)
 
@@ -613,11 +636,12 @@ class NodeManager(object):
 
     """
 
-    def __init__(self, ip, port=0, genisus_node=False, is_committee_node=False, 
+    def __init__(self, ip, port=0, genisus_node=False, parse=5001, is_committee_node=False, 
                     leader_shift=False, expected_client_num=4, isServer=False):
         self.ip = ip
         self.port = port
-        self.node_id = self.__random_id()
+        self.blockchain = Blockchain(genisus_node, parse)
+        self.node_id = self.__random_id(self.blockchain.wallet.address)
         self.address = (self.ip, self.port)
         self.buckets = KBucketSet(self.node_id)
         self.is_committee = is_committee_node
@@ -625,8 +649,9 @@ class NodeManager(object):
         self.expectedClientNum = expected_client_num
         self.leadershift = leader_shift
         
-        self.view = 0 #轮次
+        self.view = 0 # 轮次
         
+        self.numSeedNode = 0
         self.receivealltx_last = 0
         self.receivealltx = 0
         self.txinblock = 0
@@ -648,6 +673,7 @@ class NodeManager(object):
         self.finishflag = False #是否收到法定个哈希并sendreply
         self.successflag = False
         self.receiveblock = True
+        self.errorflag = True
         self.failhash = []
         self.hash_note = {} # 记录收到的failhash以寻找可以请求正确区块的节点
         self.fail = False
@@ -678,10 +704,6 @@ class NodeManager(object):
         self.alive_nodes = {}  # {"xxxx":"2018-03-12 22:00:00",....}
 
         self.server.node_manager = self
-        self.blockchain = Blockchain(genisus_node)
-        self.numSeedNode = 0
-
-        self.errorflag = True
 
         # 消息处理
         self.processmessages_thread = threading.Thread(target=self.server.serve_forever)
@@ -819,8 +841,17 @@ class NodeManager(object):
         if len(seed_nodes) == 0:
             for seed_node in self.buckets.get_all_nodes():
                 self.iterative_find_nodes(self.client.node_id, seed_node)
-        
+
         self.numSeedNode = len(seed_nodes)
+
+    def restart_bootstrap(self, seednodes):
+        print("+++restart bootstrap+++")
+        self.committee_member = seednodes
+        self.numSeedNode = len(seednodes)
+        # for node in seednodes:
+        #     msg_obj = packet.Message("restart", [self.node_id, (self.client.ip, self.client.port)])
+        #     msg_bytes = pickle.dumps(msg_obj)
+        #     self.client.sendrestart(self.server.socket, (node.ip, node.port), msg_bytes)
 
     def __hash_function(self, key):
         return int(hashlib.md5(key.encode('ascii')).hexdigest(), 16)
@@ -828,8 +859,24 @@ class NodeManager(object):
     def __get_rpc_id(self):
         return random.getrandbits(constant.BITS)
 
-    def __random_id(self):
-        return random.randint(0, (2 ** constant.BITS) - 1)
+    def __random_id(self, wallet_address):
+        new_id = random.randint(0, (2 ** constant.BITS) - 1)
+        
+        if not os.path.isdir(wallet_address):
+            os.mkdir(wallet_address)
+        cf = configparser.ConfigParser()
+        cf.read(wallet_address + '/IoTBlockchain.conf')
+
+        try:
+            pre_id = cf.get('meta', 'node_id')
+        except configparser.NoOptionError as e:
+            cf.set('meta', 'node_id', str(new_id))
+            with open(wallet_address + '/IoTBlockchain.conf', 'w+') as f:
+                cf.write(f)
+        else:
+            new_id = pre_id
+        
+        return new_id 
 
     def hearbeat(self, node, bucket, node_idx):
         # buckets在15分钟内节点未改变过需要进行refresh操作（对buckets中的每个节点发起find node操作）
@@ -1125,8 +1172,8 @@ class NodeManager(object):
             self.replyflag = True
             self.replytime = int(time.time())
         # error test
-        if self.view == 3 and self.is_primary:
-            self.blockcache.current_hash += '1'
+        # if self.view == 3 and self.is_primary:
+        #     self.blockcache.current_hash += '1'
             
 
     def sendreply(self, blockhash):
