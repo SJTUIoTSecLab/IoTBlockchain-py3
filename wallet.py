@@ -10,12 +10,13 @@ class Wallet(object):
     简化钱包，一个钱包只包含一个密钥对（公钥+私钥）
     """
 
-    def __init__(self, genisus_node, parse):
+    def __init__(self, genisus_node, port):
         if genisus_node:
             pubkey, privkey = self.get_genisus_keypair()
+        elif port >= 5001 and port <= 5009:
+            pubkey, privkey = self.get_keypair(port)
         else:
-            pubkey, privkey = self.get_keypair(parse)
-            # pubkey, privkey = rsa.newkeys(1024) # 随机生成
+            pubkey, privkey = rsa.newkeys(1024)
 
         self.pubkey = pubkey
         self.privkey = privkey
@@ -31,11 +32,11 @@ class Wallet(object):
         return pubkey, privkey
 
     
-    def get_keypair(self, parse):
-        with open('rsa_keys/g'+str(parse)+'_public.pem', 'r') as f:
+    def get_keypair(self, port):
+        with open('rsa_keys/g'+str(port)+'_public.pem', 'r') as f:
             pubkey = rsa.PublicKey.load_pkcs1(f.read().encode())
 
-        with open('rsa_keys/g'+str(parse)+'_private.pem', 'r') as f:
+        with open('rsa_keys/g'+str(port)+'_private.pem', 'r') as f:
             privkey = rsa.PrivateKey.load_pkcs1(f.read().encode())
 
         return pubkey, privkey

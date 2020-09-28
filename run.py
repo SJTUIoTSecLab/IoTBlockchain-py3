@@ -622,7 +622,7 @@ if __name__ == '__main__':
     else:
         genisus_node = False
 
-    node_manager = NodeManager('localhost', port, genisus_node, parse=port, is_committee_node=True, leader_shift=False, expected_client_num=2)
+    node_manager = NodeManager('localhost', port, genisus_node, is_committee_node=True, leader_shift=False, expected_client_num=2)
     blockchain = node_manager.blockchain
     address = blockchain.get_wallet_address()
 

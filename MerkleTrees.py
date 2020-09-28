@@ -63,7 +63,5 @@ class MerkleTrees(object):
         return self.transactions
 
     def get_root_leaf(self):
-        # print self.transaction_tree.keys()
-        assert len(self.transaction_tree.keys()) > 0
         last_key = list(self.transaction_tree.keys())[-1]
         return self.transaction_tree[last_key]

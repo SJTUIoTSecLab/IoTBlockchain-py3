@@ -16,8 +16,8 @@ from wallet import Wallet
 
 node_list = []
 defaultPort = 30134
-serverIP = "121.36.95.93"
-serverAddress = "121.36.95.93:30134"
+serverIP = "127.0.0.1" # "121.36.95.93"
+serverAddress = "127.0.0.1:30134" # "121.36.95.93:30134"
 
 app = Flask(__name__)
 
@@ -174,18 +174,20 @@ def perform_transaction(sender, receiver, amount=-1):
 
     sender_address = str(node_list[sender]["ip"]) + ":" + str(node_list[sender]["port"])
 
-    if not amount > 0:
-        sender_balance = get_balance(sender_address, sender_wallet)
+    # if not amount > 0:
+    #     sender_balance = get_balance(sender_address, sender_wallet)
 
-        if sender_balance is None:
-            return
+    #     if sender_balance is None:
+    #         return
 
-        sender_balance = sender_balance['balance']
+    #     sender_balance = sender_balance['balance']
 
-        if sender_balance <= 0:
-            return
+    #     if sender_balance <= 0:
+    #         return
 
-        amount = random.random() * sender_balance / 10
+    #     amount = random.random() * sender_balance / 10
+
+    amount = random.randint(1, 10)
 
     print('send from node ' + str(sender) + ' to node ' + str(receiver) + ' with amount:' + str(amount))
     simulate_tx(sender_address, sender_wallet, receiver_wallet, amount)
@@ -195,7 +197,7 @@ def perform_transaction(sender, receiver, amount=-1):
 def simulate_tx(address, sender, receiver, amount):
     data = dict(sender=sender, receiver=receiver, amount=amount)
 
-    req = urllib.request.Request(url="http://" + address + "/transactions/new",
+    req = urllib.request.Request(url="http://" + address + "/transactions/new_easy",
                                  headers={"Content-Type": "application/json"}, data=json.dumps(data).encode('utf-8'))
     res_data = urllib.request.urlopen(req)
     res = res_data.read()
@@ -279,6 +281,24 @@ def new_transaction_app():
     else:
         response = {'message': "Not enough funds!"}
         return jsonify(response), 200
+
+
+@app.route('/transactions/new_easy', methods=['POST'])
+def new_easy_transaction():
+    values = request.get_json()
+    required = ['sender', 'receiver', 'amount']
+    if not all(k in values for k in required):
+        return 'Missing values', 400
+
+    # Create a new Transaction
+    new_tx = blockchain.new_easy_transaction(values['sender'], values['receiver'], values['amount'])
+
+    output = {
+        'message': 'new transaction been created successfully!',
+        'received_transactions': [tx.json_output() for tx in blockchain.received_transactions]
+    }
+    json_output = json.dumps(output, indent=4)
+    return json_output, 200
 
 
 @app.route('/balance', methods=['GET'])
@@ -447,13 +467,16 @@ if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('-s', action='store_true')
     parser.add_argument('-n', default=4, type=int, help='number of expected nodes')
+    parser.add_argument('-p', '--port', default=defaultPort, type=int, help='port to listen on')
     args = parser.parse_args()
     isServer = args.s
     expectedClientNum = args.n
+    defaultPort = args.p
 
     if isServer:
 
-        node_manager = NodeManager('0.0.0.0', defaultPort, isServer, True, expectedClientNum, True)
+        # node_manager = NodeManager('0.0.0.0', defaultPort, isServer, True, False, expectedClientNum, isServer)
+        node_manager = NodeManager('127.0.0.1', defaultPort, isServer, True, False, expectedClientNum, isServer)
         blockchain = node_manager.blockchain
 
         print("Wallet address: %s" % blockchain.get_wallet_address())
@@ -477,9 +500,11 @@ if __name__ == '__main__':
 
     else:
 
-        lport = random.randint(30000, 31000)
+        # lport = random.randint(30000, 31000)
+        lport = defaultPort
 
-        node_manager = NodeManager('0.0.0.0', lport, isServer, True, expectedClientNum, False)
+        # node_manager = NodeManager('0.0.0.0', lport, isServer, True, False, expectedClientNum, isServer)
+        node_manager = NodeManager('127.0.0.1', lport, isServer, True, False, expectedClientNum, isServer)
         blockchain = node_manager.blockchain
 
         print("Wallet address: %s" % blockchain.get_wallet_address())

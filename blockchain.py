@@ -533,7 +533,10 @@ class Blockchain(object):
         print("send tx:", len(self.send_transactions))
         print(self.current_transactions)
 
-        merkletrees = MerkleTrees(self.current_transactions)
+        if len(self.current_transactions) == 0:
+            merkletrees = MerkleTrees([Tx_easy('None', 'None', 0, 0)])
+        else:
+            merkletrees = MerkleTrees(self.current_transactions)
         merkleroot = merkletrees.get_root_leaf()
 
         # previous_block = self.get_last_block()

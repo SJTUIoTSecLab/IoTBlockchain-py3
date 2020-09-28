@@ -636,11 +636,11 @@ class NodeManager(object):
 
     """
 
-    def __init__(self, ip, port=0, genisus_node=False, parse=5001, is_committee_node=False, 
+    def __init__(self, ip, port=0, genisus_node=False, is_committee_node=False, 
                     leader_shift=False, expected_client_num=4, isServer=False):
         self.ip = ip
         self.port = port
-        self.blockchain = Blockchain(genisus_node, parse)
+        self.blockchain = Blockchain(genisus_node, port)
         self.node_id = self.__random_id(self.blockchain.wallet.address)
         self.address = (self.ip, self.port)
         self.buckets = KBucketSet(self.node_id)
@@ -848,6 +848,7 @@ class NodeManager(object):
         print("+++restart bootstrap+++")
         self.committee_member = seednodes
         self.numSeedNode = len(seednodes)
+        # 如果ip或port有改变
         # for node in seednodes:
         #     msg_obj = packet.Message("restart", [self.node_id, (self.client.ip, self.client.port)])
         #     msg_bytes = pickle.dumps(msg_obj)
@@ -902,7 +903,7 @@ class NodeManager(object):
             
             if self.view == 0 and self.is_primary:
                 # time.sleep(30) # 用 run + simulation 运行时根据节点数量设置相应大的等待时间
-                if len(self.blockchain.received_transactions) > 3:
+                if len(self.blockchain.received_transactions) >= 5:
                     print("-------START--------")
                     self.sendrequest(0)
 

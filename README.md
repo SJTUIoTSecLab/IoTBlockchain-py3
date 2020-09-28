@@ -113,4 +113,4 @@ Or send a post request to the following address to :
 
 节点掉线后再重新启动节点`python run.py -p 5001`
 
-重启后立即运行`python restart.py -p 5001`进行恢复
+重启后立即运行`python restart.py -p 5001`进行恢复；如果内存还没有被覆盖且ip地址和端口没有发生变化，可以不运行`restart.py`直接正常恢复
