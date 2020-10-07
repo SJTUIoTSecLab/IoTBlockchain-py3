@@ -3,7 +3,7 @@
 import threading
 import numpy
 class LSP(object):
-    def __init__(self,address,c_id):
+    def __init__(self,address,c_id,rootlist):
         self.lock = threading.Lock()
         self.node_id=c_id
         self.basetable=[address[0],address[1]]#'age'://,'seq'://待加入
@@ -16,7 +16,7 @@ class LSP(object):
         self.flagg=0#判断是否还能接受lsp信息，0为还可以
         self.message=[]#[msg_bytes,"sendrequest"]
         self.lspgroup=[]# 保存收到的lsp
-        self.rootList=[("127.0.0.1",5000)]
+        self.rootList=rootlist
 
 
         self.dictlsp={}#lsp字典

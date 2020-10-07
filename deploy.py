@@ -480,13 +480,16 @@ if __name__ == '__main__':
     args = parser.parse_args()
     isServer = args.s
     expectedClientNum = args.n
-    defaultPort = args.p
+    try:
+        defaultPort = args.p
+    except AttributeError:
+        print('~')
     re = args.r
 
     if isServer:
 
-        # node_manager = NodeManager('0.0.0.0', defaultPort, isServer, True, False, expectedClientNum, isServer)
-        node_manager = NodeManager('127.0.0.1', defaultPort, isServer, True, False, expectedClientNum, isServer)
+        # node_manager = NodeManager('0.0.0.0', [(serverIP, defaultPort)], defaultPort, isServer, True, False, expectedClientNum, isServer)
+        node_manager = NodeManager('127.0.0.1', [(serverIP, defaultPort)], defaultPort, isServer, True, False, expectedClientNum, isServer)
         blockchain = node_manager.blockchain
 
         print("Wallet address: %s" % blockchain.get_wallet_address())
@@ -513,8 +516,8 @@ if __name__ == '__main__':
         # lport = random.randint(30000, 31000)
         lport = defaultPort
 
-        # node_manager = NodeManager('0.0.0.0', lport, isServer, True, False, expectedClientNum, isServer)
-        node_manager = NodeManager('127.0.0.1', lport, isServer, True, False, expectedClientNum, isServer)
+        # node_manager = NodeManager('0.0.0.0', [(serverIP, defaultPort)], lport, isServer, True, False, expectedClientNum, isServer)
+        node_manager = NodeManager('127.0.0.1', [(serverIP, defaultPort)], lport, isServer, True, False, expectedClientNum, isServer)
         blockchain = node_manager.blockchain
 
         print("Wallet address: %s" % blockchain.get_wallet_address())

@@ -1,5 +1,6 @@
 *.pyc
 __pycache__/
+p2p/__pycache__/
 
 .idea/
 
