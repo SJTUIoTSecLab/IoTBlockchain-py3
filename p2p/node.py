@@ -289,8 +289,14 @@ class ProcessMessages(socketserver.BaseRequestHandler):
                 
             print("the hash of last view:")
             print(payload["hash"])
-            self.server.node_manager.primary_node_address = payload["address"]
-
+            if self.server.node_manager.view ==1:
+                self.server.node_manager.primary_node_address = payload["address"]
+                cf = configparser.ConfigParser()
+                wallet_address = self.server.node_manager.blockchain.get_wallet_address()
+                cf.read(wallet_address + '/IoTBlockchain.conf')
+                cf.set('meta', 'primary_node_address', payload["address"])
+                with open(wallet_address + '/IoTBlockchain.conf', 'w+') as f:
+                    cf.write(f)
             if self.server.node_manager.view >= 1:
                 tmp = time.time()
                 if self.server.node_manager.lastblocktime['view'] == self.server.node_manager.view - 1 and self.server.node_manager.lastblocktime['time'] != -1:
@@ -848,11 +854,6 @@ class NodeManager(object):
         print("+++restart bootstrap+++")
         self.committee_member = seednodes
         self.numSeedNode = len(seednodes)
-        # 如果ip或port有改变
-        # for node in seednodes:
-        #     msg_obj = packet.Message("restart", [self.node_id, (self.client.ip, self.client.port)])
-        #     msg_bytes = pickle.dumps(msg_obj)
-        #     self.client.sendrestart(self.server.socket, (node.ip, node.port), msg_bytes)
 
     def __hash_function(self, key):
         return int(hashlib.md5(key.encode('ascii')).hexdigest(), 16)
@@ -1015,6 +1016,15 @@ class NodeManager(object):
         else:
             raise KeyError
 
+   
+    def sendrestart(self):
+        # self.committee_member = seednodes
+        # self.numSeedNode = len(seednodes)
+        msg_obj = packet.Message("restart", [self.node_id, (self.client.ip, self.client.port)])
+        msg_bytes = pickle.dumps(msg_obj)
+        self.client.sendrestart(self.server.socket, self.primary_node_address, msg_bytes)
+
+   
     def sendrequestmessage(self,payload):
         print("change sent")
         node = self.committee_member[0]

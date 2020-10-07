@@ -8,6 +8,7 @@ from argparse import ArgumentParser
 from builtins import str
 import random
 from flask import jsonify, request, Flask
+import configparser
 
 import db
 from p2p.node import NodeManager, Node
@@ -61,6 +62,13 @@ def bootstrap(address, seeds):
         urllib.request.urlopen(req)
     except Exception as e:
         print(e)
+
+
+def request_seeds(wallet_address):
+    cf = configparser.ConfigParser()
+    cf.read(wallet_address + '/IoTBlockchain.conf')
+    node_manager.primary_node_address = cf.get('meta', 'primary_node_address')
+    node_manager.sendrestart()
 
 
 async def start_simulation():
@@ -468,10 +476,12 @@ if __name__ == '__main__':
     parser.add_argument('-s', action='store_true')
     parser.add_argument('-n', default=4, type=int, help='number of expected nodes')
     parser.add_argument('-p', '--port', default=defaultPort, type=int, help='port to listen on')
+    parser.add_argument('-r', action='store_true')
     args = parser.parse_args()
     isServer = args.s
     expectedClientNum = args.n
     defaultPort = args.p
+    re = args.r
 
     if isServer:
 
@@ -515,6 +525,9 @@ if __name__ == '__main__':
 
         # shall be await app started
         time.sleep(5)
+        if re:
+            print('---restart---')
+            request_seeds(blockchain.get_wallet_address())
         client_hello()
 
         thread.join()
