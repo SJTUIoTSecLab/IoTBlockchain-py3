@@ -16,7 +16,7 @@ class LSP(object):
         self.flagg=0#判断是否还能接受lsp信息，0为还可以
         self.message=[]#[msg_bytes,"sendrequest"]
         self.lspgroup=[]# 保存收到的lsp
-        self.rootList=[]
+        self.rootList=[("127.0.0.1",5000)]
 
 
         self.dictlsp={}#lsp字典
@@ -87,8 +87,7 @@ class LSP(object):
         #生成所有信息得到的矩阵树
         s=list(self.dictlsp)
         k=len(s)-1
-	#print "mark len of tree"
-	#print k
+
         c=numpy.zeros([k+1,k+1],dtype=int) 
         #第0行的赋值
         for i in range(k+1): #row

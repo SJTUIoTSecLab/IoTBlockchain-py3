@@ -109,7 +109,7 @@ class ProcessMessages(socketserver.BaseRequestHandler):
             self.handle_floodAtLeaf(payload)
         elif command == "tellDistriction":#处理分区
             self.handle_tellDistriction(payload)
-        elif command == "feedback"#广播反馈
+        elif command == "feedback":#广播反馈
             self.handle_feedback(payload)
         #elif command == "generateRoot"#生成根时各个节点共享根的信息
 #####　 self.handle_generateRoot(payload)
@@ -226,7 +226,7 @@ list(source_node))#向自己路由表中的节点发送,需要在其他节点
              #判断什么时候能计算最小生成树
               k=len(self.server.node_manager.tablsp.lspgroup)
                #print "enter handle_RESP"
-              if k>0:#k满足要求可以进入广播  tochange   #10个节点k>8
+              if k>3:#k满足要求可以进入广播  tochange   #10个节点k>8
                    # 进行生成树的计算,在节点中储存这棵树
                   self.server.node_manager.tablsp.dictlspfun()#生成字典
                   dictlsp=self.server.node_manager.tablsp.dictlsp
@@ -254,21 +254,18 @@ list(source_node))#向自己路由表中的节点发送,需要在其他节点
     def handle_BROADCAST(self,payload):#收到了广播，按指派的路由表广播
         #if 是测试用的
         #if not self.server.node_manager.tablsp.message:
-            #########
-payload = packet.Ping(self.node_id, server_node_id)
-        msg_obj = packet.Message("ping", payload)
-#############
+
             tree=payload.tree
             message=payload.message
             dictlsp=payload.dictlsp
             address=payload.address
             #告诉发送节点自己收到了broadcast
-            self.server.node_manager.feedback(address)#todo
+            self.server.node_manager.feedback(address)
                 #将广播信息计入本节点
            # print ("here port:")
-           # print (self.server.node_manager.tablsp.basetable[1])
+            port=self.server.node_manager.tablsp.basetable[1]
            # print ("here ip:")
-           # print (self.server.node_manager.tablsp.basetable[0])
+            ip=self.server.node_manager.tablsp.basetable[0]
             #self.server.node_manager.tablsp.addmessage(message)
            # print ("message in broadcast",self.server.node_manager.tablsp.message)
             #print ("----------------")
@@ -1183,22 +1180,12 @@ class NodeManager(object):
             message=[msg_bytes,"sendrequest"]
             #print("message in sendrequest=",message)
             self.server.node_manager.simubroad(message)
-		#toddddddo#怎么保证广播完毕后才执行下一步？
-            #############################
-            # print "++++++++++++++sendrequest&tx++++++++++++++++"
             self.sendalltx(self.blockchain.send_transactions)
             self.startflag = True
             # print "pre-prepared2"
         else:
             self.GST += 1
             self.starttime = int(time.time())
-            #for node in self.committee_member:    
-             #   msg_obj = packet.Message("sendrequest", 
-             #     {"hash":payload, "address": (self.client.ip,self.client.port), "start": self.starttime, "GST": self.GST})
-             #   msg_bytes = pickle.dumps(msg_obj)
-              #  self.client.sendrequest(self.server.socket, (node.ip, node.port), msg_bytes)
-         
-            ##############################
             msg_obj = packet.Message("sendrequest", {"hash":payload, "address": (self.client.ip,self.client.port),"start": self.starttime,"GST": self.GST} )
             msg_bytes = pickle.dumps(msg_obj)
 	        #self.tablsp.message=[msg_bytes,"sendrequest"]
@@ -1261,6 +1248,8 @@ class NodeManager(object):
         # print "received tx:", len(self.blockchain.received_transactions)
         # print "current tx:", len(self.blockchain.current_transactions)
         tm = int(time.time())
+        print("self.committee_member:",self.committee_member)#test
+
         for node in self.committee_member:
             print("sendalltx to ", (node.ip, node.port))
             msg_obj = packet.Message("sendalltx", {"alltx":alltx, "time":tm})
@@ -1394,16 +1383,14 @@ class NodeManager(object):
         :param seed_nodes:<Node list> 种子节点列表
         :return:
         """
-        node=seed_nodes.pop()###这个地方在simulation_test.py中补充了本端口
-        x=input("root port:")
-        x=int(x)
-        self.tablsp.basetable[0]=node.ip
-        self.tablsp.basetable[1]=node.port
+        
+        self.tablsp.basetable[0]=self.ip
+        self.tablsp.basetable[1]=self.port
         if self.tablsp.basetable[0]=="localhost":
              self.tablsp.basetable[0]="127.0.0.1"
         #self.tablsp.num=random.randint(0,2)
         self.tablsp.num=0
-        self.tablsp.rootList.append((self.tablsp.basetable[0],x))
+        #self.tablsp.rootList.append((self.tablsp.basetable[0],x))
         print("root",self.tablsp.rootList)
 
         ###如果根节点不够则注册成根节点
@@ -1422,6 +1409,7 @@ class NodeManager(object):
         for node in self.tablsp.rootList:
                 self.tellDistriction(self.tablsp.num,node)
 #######################
+        print("seed_nodes:  ",seed_nodes)#test
         self.committee_member = seed_nodes
         
         for seed_node in seed_nodes:
@@ -1443,7 +1431,7 @@ class NodeManager(object):
 	                print (d)
 	                self.tablsp.neighbourdistance.append(d)
             # 握手,加入lsptab中
-	        self.sendversion(seed_node,
+	                self.sendversion(seed_node,
                               Version(1, int(time.time()), self.node_id, seed_node.node_id,
                                      db.get_block_height(self.blockchain.get_wallet_address()),d))
 	#建立邻居完毕后整理lsp
@@ -1528,6 +1516,7 @@ class NodeManager(object):
             msg_bytes = pickle.dumps(msg_obj)
             self.client.feedback(self.server.socket,
                         target_node_address,msg_bytes)
+
             
             
     def broadcast(self,message,tree,dictlsp):
