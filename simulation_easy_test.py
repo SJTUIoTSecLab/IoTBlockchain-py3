@@ -31,7 +31,8 @@ def run():
 
     node1_seeds = [
         {"node_id": node2["node_id"], "ip": node2["ip"], "port": node2["port"]},
-        {"node_id": node3["node_id"], "ip": node3["ip"], "port": node3["port"]}
+        {"node_id": node3["node_id"], "ip": node3["ip"], "port": node3["port"]},
+	{"node_id": node1["node_id"], "ip": node1["ip"], "port": node1["port"]}
     ]
     print(node1_seeds)
     with open(node1["wallet"]+'/seeds.data', 'wb') as f:
@@ -40,7 +41,8 @@ def run():
 
     node2_seeds = [
         {"node_id": node3["node_id"], "ip": node3["ip"], "port": node3["port"]},
-        {"node_id": node1["node_id"], "ip": node1["ip"], "port": node1["port"]}
+        {"node_id": node1["node_id"], "ip": node1["ip"], "port": node1["port"]},
+	{"node_id": node2["node_id"], "ip": node2["ip"], "port": node2["port"]}
     ]
     with open(node2["wallet"]+'/seeds.data', 'wb') as f:
         pickle.dump(node2_seeds, f)
@@ -48,7 +50,8 @@ def run():
 
     node3_seeds = [
         {"node_id": node1["node_id"], "ip": node1["ip"], "port": node1["port"]},
-        {"node_id": node2["node_id"], "ip": node2["ip"], "port": node2["port"]}
+        {"node_id": node2["node_id"], "ip": node2["ip"], "port": node2["port"]},
+	{"node_id": node3["node_id"], "ip": node3["ip"], "port": node3["port"]}
     ]
     with open(node3["wallet"]+'/seeds.data', 'wb') as f:
         pickle.dump(node3_seeds, f)
