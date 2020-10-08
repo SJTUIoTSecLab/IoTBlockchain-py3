@@ -30,17 +30,31 @@ def server_hello():
     if not all(k in values for k in required):
         return 'Missing values', 400
     values["ip"] = request.environ['REMOTE_ADDR']
+    is_new_node=values['is_new_node']
+    del(values['is_new_node'])
     node_list.append(values)
+    if is_new_node:
+        node=values
+        seed_list = []
+        for peer in node_list:
+            if node != peer:
+                seed_list.append({"node_id": peer["node_id"], "ip": peer["ip"], "port": peer["port"]})
+        print(seed_list)
+        bootstrap(str(node["ip"]) + ":" + str(node["port"]), seed_list)
+        time.sleep(5)
+        node_manager.introduce_neighbour(node_list)
+        
 
     return 'hello', 200
 
 
-def client_hello():
+def client_hello(is_new_node):
     output = {
         'node_id': node_manager.node_id,
         'port': node_manager.port,
         'wallet': blockchain.get_wallet_address(),
-        'pubkey_hash': Script.sha160(str(blockchain.wallet.pubkey))
+        'pubkey_hash': Script.sha160(str(blockchain.wallet.pubkey)),
+        'is_new_node': is_new_node
     }
     output = json.dumps(output, default=lambda obj: obj.__dict__, indent=4)
 
@@ -474,9 +488,13 @@ if __name__ == '__main__':
 
     parser = ArgumentParser()
     parser.add_argument('-s', action='store_true')
-    parser.add_argument('-n', default=4, type=int, help='number of expected nodes')
+   # parser.add_argument('-n', default=4, type=int, help='number of expected nodes')
+    parser.add_argument('-n', type=int, help='number of expected nodes')
     parser.add_argument('-p', '--port', default=defaultPort, type=int, help='port to listen on')
     parser.add_argument('-r', action='store_true')
+    ##
+    parser.add_argument('-c',action='store_true')
+    ##
     args = parser.parse_args()
     isServer = args.s
     expectedClientNum = args.n
@@ -485,6 +503,15 @@ if __name__ == '__main__':
     except AttributeError:
         print('~')
     re = args.r
+
+
+    # ##
+    is_new_node=args.c
+    # if is_new_node:
+    #     lport = random.randint(30000, 31000)
+    #     pass
+    # ##
+
 
     if isServer:
 
@@ -513,10 +540,14 @@ if __name__ == '__main__':
 
     else:
 
-        # lport = random.randint(30000, 31000)
-        lport = defaultPort
+        lport = random.randint(30000, 31000)
+        #lport = defaultPort
 
         # node_manager = NodeManager('0.0.0.0', [(serverIP, defaultPort)], lport, isServer, True, False, expectedClientNum, isServer)
+
+
+
+
         node_manager = NodeManager('127.0.0.1', [(serverIP, defaultPort)], lport, isServer, True, False, expectedClientNum, isServer)
         blockchain = node_manager.blockchain
 
@@ -531,6 +562,6 @@ if __name__ == '__main__':
         if re:
             print('---restart---')
             request_seeds(blockchain.get_wallet_address())
-        client_hello()
+        client_hello(is_new_node)
 
         thread.join()

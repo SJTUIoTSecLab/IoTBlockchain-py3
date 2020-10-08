@@ -119,13 +119,34 @@ class ProcessMessages(socketserver.BaseRequestHandler):
             self.handle_feedback(payload)
         #elif command == "generateRoot"#生成根时各个节点共享根的信息
 #####　 self.handle_generateRoot(payload)
+        ##新节点加入
+        elif command == "new_connect":
+            self.handle_new_connect(payload)
 
+        elif command == "inform_neighbour":
+            self.handle_inform_neighbour(payload)
             # client_node_id = payload.from_id
             # if self.server.node_manager.buckets.exist(client_node_id):
             #     self.server.node_manager.alive_nodes[client_node_id] = int(time.time())  # 更新节点联系时间
+##新节点加入
+    def handle_inform_neighbour(self,payload):
+        self.server.node_manager.insert_new_node(payload.new_node)
+
+
+    def handle_new_connect(self,payload):
+        print("++++++",payload)#test
+        address_list=payload.address_list
+        new_node=payload.new_node
+        print(address_list,new_node)
+        self.server.node_manager.inform_neighbour(address_list,new_node)
+
+       
+
+
 
    # def handle_generateRoot(self,payload):#生成时间隔一点时间
 #    self.server.node_manager.tablsp.rootList=payload
+
     def handle_feedback(self,payload):
         sub_address=payload.sub_address
         self.server.node_manager.cancelkid(sub_address)
@@ -823,8 +844,12 @@ class Node(object):
 
     def sendverack(self, sock, target_node_address, message):
         sock.sendto(zlib.compress(message), target_node_address)
+##新节点加入
+    def new_connect(self,sock,target_node_address,message):
+        sock.sendto(zlib.compress(message),target_node_address)
 
-
+    def inform_neighbour(self,sock,target_node_address,message):
+         sock.sendto(zlib.compress(message),target_node_address)
 ###广播部份
     def feedback(self,sock,target_node_address,message):#反馈信息表示自己收到了broadcast
         sock.sendto(zlib.compress(message),target_node_address)
@@ -1529,17 +1554,16 @@ class NodeManager(object):
                 self.tellDistriction(self.tablsp.num,node)
 #######################
         print("seed_nodes:  ",seed_nodes)#test
-        self.committee_member = seed_nodes
+        self.committee_member = seed_nodes###continue
 
         for seed_node in seed_nodes:
 	        #规范ip
             if seed_node.ip=="localhost":
                 seed_node.ip="127.0.0.1"
-            if self.tablsp.basetable[0]=="localhost":
-                self.tablsp.basetable[0]="127.0.0.1"
 	        #判断是否已经存在在邻居中
-            flag=self.tablsp.judnei(seed_node)
+            #flag=self.tablsp.judnei(seed_node)
 	        #   print (self.tablsp.basetable[1])
+            flag=0
             if flag==0: 
                 # 不在邻居中 将该节点放入邻居中
                 self.tablsp.neighbourip.append(seed_node.ip)
@@ -1694,3 +1718,60 @@ class NodeManager(object):
                                 self.tablsp.neighbourport[x])
             self.client.floodAtLeaf(self.server.socket,
                         target_node_address,msg_bytes)
+
+
+    def introduce_neighbour(self,node_list):
+        ip_list=[x['ip'] for x in node_list]
+        port_list=[x['port'] for x in node_list]
+        target_node_address_list=list(zip(ip_list,port_list))
+        
+        new_node_address=target_node_address_list.pop()
+        x=node_list.pop()
+        node_list.append(x)
+        new_node=x.copy()
+        payload=packet.new_connect(target_node_address_list,new_node)
+        msg_obj=packet.Message("new_connect",payload)
+        msg_bytes = pickle.dumps(msg_obj)
+
+        self.client.new_connect(self.server.socket,
+                   new_node_address,msg_bytes)
+
+
+    def inform_neighbour(self,address_list,new_node):
+        payload=packet.inform_neighbour(new_node)
+        msg_obj=packet.Message("inform_neighbour",payload)
+        msg_bytes = pickle.dumps(msg_obj)
+        for x in address_list:
+            new_node_address=x
+            self.client.inform_neighbour(self.server.socket,
+                   new_node_address,msg_bytes)
+
+    def insert_new_node(self,new_node):
+        new_seed_node=Node(new_node['ip'],
+        new_node['port'],new_node['node_id'])
+        self.committee_member.append(new_seed_node)
+        
+        self.tablsp.neighbourip.append(new_seed_node.ip)
+        self.tablsp.neighbourport.append(new_seed_node.port)
+                #设置距离
+        d=random.randint(1,4)
+        print ("insert distance in bootrs")
+        print (d)
+        self.tablsp.neighbourdistance.append(d)
+        # 握手,加入lsptab中
+        self.sendversion(new_seed_node,
+                            Version(1, int(time.time()), self.node_id, new_seed_node.node_id,
+                                    db.get_block_height(self.blockchain.get_wallet_address()),d))
+	#建立邻居完毕后整理lsp
+        self.tablsp.generatelsp()
+            
+       
+
+        
+
+
+        
+        
+
+
+

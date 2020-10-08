@@ -1,6 +1,13 @@
 # coding=utf-8
 import json
+class inform_neighbour(object):
+    def __init__(self,new_node):
+        self.new_node=new_node
 
+class new_connect(object):
+    def __init__(self,address_list,new_node):
+        self.address_list=address_list
+        self.new_node=new_node
 #广播部分
 class feedback(object):
     def __init__(self,sub_address):
