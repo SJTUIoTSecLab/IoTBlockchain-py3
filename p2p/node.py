@@ -1749,21 +1749,25 @@ class NodeManager(object):
     def insert_new_node(self,new_node):
         new_seed_node=Node(new_node['ip'],
         new_node['port'],new_node['node_id'])
-        self.committee_member.append(new_seed_node)
+	flag=self.tablsp.judnei(new_seed_node)
+	if flag == 0:
+        	self.committee_member.append(new_seed_node)
         
-        self.tablsp.neighbourip.append(new_seed_node.ip)
-        self.tablsp.neighbourport.append(new_seed_node.port)
+        	self.tablsp.neighbourip.append(new_seed_node.ip)
+        	self.tablsp.neighbourport.append(new_seed_node.port)
                 #设置距离
-        d=random.randint(1,4)
-        print ("insert distance in bootrs")
-        print (d)
-        self.tablsp.neighbourdistance.append(d)
+        	d=random.randint(1,4)
+        	print ("insert distance in bootrs")
+        	print (d)
+        	self.tablsp.neighbourdistance.append(d)
         # 握手,加入lsptab中
-        self.sendversion(new_seed_node,
+        	self.sendversion(new_seed_node,
                             Version(1, int(time.time()), self.node_id, new_seed_node.node_id,
                                     db.get_block_height(self.blockchain.get_wallet_address()),d))
 	#建立邻居完毕后整理lsp
-        self.tablsp.generatelsp()
+        	self.tablsp.generatelsp()
+	else :
+		pass
             
        
 
