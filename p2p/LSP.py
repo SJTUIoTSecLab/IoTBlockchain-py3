@@ -42,14 +42,15 @@ class LSP(object):
     def judnei(self,node):#判断node是否在邻居中
         flag=0
         k=len(self.neighbourip)
-	#for i in range(k):c3/p
-		#ip=self.neighbourip[i]
-		#if node.ip==ip:   todo格式会改变
-        for j in range(k):
-                 port=self.neighbourport[j]
-                 if node.port==port:
-                     flag=1
+	for i in range(k):
+		ip=self.neighbourip[i]
+		if node.ip==ip:
+			port=self.neighbourport[i]
+                        if node.port==port:
+                                flag=1
         return flag
+			
+
 		
 
     def generatelsp(self):
