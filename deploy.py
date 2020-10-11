@@ -2,7 +2,7 @@ import asyncio
 import json
 import random
 import threading
-import time
+import time, os
 import urllib.request
 from argparse import ArgumentParser
 from builtins import str
@@ -14,6 +14,7 @@ import db
 from p2p.node import NodeManager, Node
 from script import Script, get_address_from_ripemd160
 from wallet import Wallet
+from transaction import Transaction, Tx_vid, Tx_report, Tx_easy
 
 node_list = []
 defaultPort = 30134
@@ -385,6 +386,102 @@ def unconfirm_tx_info_app():
     return 'not exist!', 200
 
 
+
+@app.route('/tx_in_block', methods=['GET'])
+def tx_in_block():
+    values = request.get_json()
+
+    block_index = int(request.args.get('block_index'))
+
+    block = db.get_block_data_by_index(blockchain.wallet.address, block_index)
+    tmp = dict()
+    cnt = 0
+    for tx in block.transactions:
+        if isinstance(tx, Tx_vid):
+            tmp[str(cnt)] = {
+                'txid': tx.txid,
+                'timestamp': time.strftime("%Y-%m-%d %H:%M:%S",time.localtime(tx.timestamp)),
+                'type': 'vid',
+                'vid': tx.vid
+            }
+            cnt += 1
+        
+        elif isinstance(tx, Tx_report):
+            tmp[str(cnt)] = {
+                'txid': tx.txid,
+                'timestamp': time.strftime("%Y-%m-%d %H:%M:%S",time.localtime(tx.timestamp)),
+                'type': 'report',
+                'edgeId': tx.edgeId,
+                'meanSpeed': tx.meanSpeed,
+                'vehicleNum': tx.vehicleNum
+            }
+            cnt += 1
+        
+        elif isinstance(tx, Tx_easy):
+            tmp[str(cnt)] = {
+                'txid': tx.txid,
+                'sender': tx.sender,
+                'receiver': tx.receiver,
+                'amount': tx.amount,
+                'timestamp': tx.timestamp
+            }
+            cnt += 1
+
+        elif isinstance(tx, Transaction):
+            txins = tx.txins
+            txouts = tx.txouts
+            
+            from_addr = list()
+            to_addr = list()
+            amount = 0
+
+            for txin in txins:
+                if txin.prev_tx_out_idx != -1:
+                    address = Wallet.get_address(txin.pubkey)
+                    if address not in from_addr:
+                        from_addr.append(address)
+            
+            for txout in txouts:
+                value = txout.value
+                script_pub_key = txout.scriptPubKey
+                if len(script_pub_key) == 5:
+                    recv_addr = get_address_from_ripemd160(script_pub_key[2])
+                    to_addr.append({'receiver': recv_addr, 'value': value})
+            
+            tmp[str(cnt)] = {
+                'txid': tx.txid,
+                'senders': from_addr,
+                'receivers': to_addr,
+                'amount': amount,
+                'timestamp': tx.timestamp
+            }
+
+            cnt += 1
+            
+    return json.dumps(tmp), 200
+
+
+@app.route('/block_time', methods=['GET'])
+def block_time():
+    output = node_manager.blocktime
+    output = json.dumps(output, default=lambda obj: obj.__dict__, indent=4)
+    return output, 200
+
+
+@app.route('/get_block_time', methods=['GET'])
+def get_block_time():
+    view = request.args.get('view')
+    view = int(view)
+    if view in node_manager.blocktime.keys():
+        response = {
+            'view': view,
+            'time': node_manager.blocktime[view]
+        }
+        return jsonify(response), 200
+    else:
+        return "Missing value", 200
+
+
 @app.route('/height', methods=['GET'])
 def block_height_app():
     response = {
@@ -392,6 +489,65 @@ def block_height_app():
         'value': db.get_block_height(blockchain.wallet.address)
     }
     return json.dumps(response), 200
+
+
+@app.route('/GST', methods=['GET'])
+def getGST():
+    response = {
+        'GST': node_manager.GST
+    }
+    return json.dumps(response), 200
+
+
+@app.route('/step', methods=['GET'])
+def get_step():
+    response = {
+        'step': node_manager.step
+    }
+    return json.dumps(response), 200
+
+
+@app.route('/asyn_node', methods=['GET'])
+def asyn_node():
+    view = request.args.get('view')
+
+    rate = round(node_manager.asyn[int(view)] / (node_manager.numSeedNode + 1), 3)
+
+    response = {
+        'view': int(view),
+        'numAsyn': node_manager.asyn[int(view)],
+        'numSeedNode': node_manager.numSeedNode,
+        'rate': rate
+    }
+
+    return jsonify(response), 200
+
+
+@app.route('/asyn_node_all', methods=['GET'])
+def asyn_node_all():
+    response = {
+        'numAsyn': node_manager.asyn,
+        'numSeedNode': node_manager.numSeedNode,
+    }
+
+    return jsonify(response), 200
+
+
+@app.route('/consensus_time', methods=['GET'])
+def consensus_time():
+    view = request.args.get('view')
+
+    response = {
+        'view': int(view),
+        'time': node_manager.consensus[int(view)]
+    }
+
+    return jsonify(response), 200
+
+
+@app.route('/consensus_time_all', methods=['GET'])
+def consensus_time_all():
+    return jsonify(node_manager.consensus), 200
 
 
 @app.route('/latest_tx', methods=['GET'])
@@ -433,7 +589,7 @@ def latest_tx_app():
     return json.dumps(response), 200
 
 
-@app.route('/block_info', methods=['GET'])
+@app.route('/block_info_tx', methods=['GET'])
 def block_info_app():
     height = request.args.get('height')
     block_index = int(height) - 1
@@ -484,34 +640,98 @@ def block_info_app():
     return jsonify(response), 200
 
 
+@app.route('/block_info', methods=['GET'])
+def block_info():
+    block_index = request.args.get('block_index')
+
+    block = db.get_block_data_by_index(blockchain.wallet.address, block_index)
+
+    json_transaction = list()
+    for tx in block.transactions:
+        if isinstance(tx, Tx_vid):
+            new_tx = {
+                'txid': tx.txid,
+                'timestamp': tx.timestamp,
+                'type': 'vid',
+                'vid': tx.vid
+            }
+        elif isinstance(tx, Tx_report):
+            new_tx = {
+                'txid': tx.txid,
+                'timestamp': tx.timestamp,
+                'type': 'report',
+                'edgeId': tx.edgeId,
+                'meanSpeed': tx.meanSpeed,
+                'vehicleNum': tx.vehicleNum
+            }
+        elif isinstance(tx, Tx_easy):
+            new_tx = {
+                'txid': tx.txid,
+                'sender': tx.sender,
+                'receiver': tx.receiver,
+                'amount': tx.amount,
+                'timestamp': tx.timestamp
+            }
+        elif isinstance(tx, Transaction):
+            txins = tx.txins
+            txouts = tx.txouts
+            
+            from_addr = list()
+            to_addr = list()
+            amount = 0
+
+            for txin in txins:
+                if txin.prev_tx_out_idx != -1:
+                    address = Wallet.get_address(txin.pubkey)
+                    if address not in from_addr:
+                        from_addr.append(address)
+            
+            for txout in txouts:
+                value = txout.value
+                script_pub_key = txout.scriptPubKey
+                if len(script_pub_key) == 5:
+                    recv_addr = get_address_from_ripemd160(script_pub_key[2])
+                    to_addr.append({'receiver': recv_addr, 'value': value})
+            
+            new_tx = {
+                'txid': tx.txid,
+                'senders': from_addr,
+                'receivers': to_addr,
+                'amount': amount,
+                'timestamp': tx.timestamp
+            }
+
+        json_transaction.append(new_tx)
+
+    response = {
+        'index': block.index,
+        'timestamp': block.timestamp,
+        'current_hash': block.current_hash,
+        'previous_hash': block.previous_hash,
+        'merkleroot': block.merkleroot,
+        'transactions': json_transaction
+    }
+
+    return jsonify(response), 200
+
+
 if __name__ == '__main__':
 
     parser = ArgumentParser()
     parser.add_argument('-s', action='store_true')
-   # parser.add_argument('-n', default=4, type=int, help='number of expected nodes')
-    parser.add_argument('-n', type=int, help='number of expected nodes')
-    parser.add_argument('-p', '--port', default=defaultPort, type=int, help='port to listen on')
-    parser.add_argument('-r', action='store_true')
-    ##
-    parser.add_argument('-c',action='store_true')
-    ##
+    parser.add_argument('-n', default=4, type=int, help='number of expected nodes')
+    parser.add_argument('-p', '--port', default=defaultPort, type=int, help='port to listen on, must be used together with -r')
+    parser.add_argument('-r', action='store_true', help='restart, must be used together with -p')
+    parser.add_argument('-c',action='store_true', help='new node')
     args = parser.parse_args()
     isServer = args.s
     expectedClientNum = args.n
+    re = args.r
     try:
-        defaultPort = args.p
+        argPort = args.p
     except AttributeError:
         print('~')
-    re = args.r
-
-
-    # ##
-    is_new_node=args.c
-    # if is_new_node:
-    #     lport = random.randint(30000, 31000)
-    #     pass
-    # ##
-
+    is_new_node = args.c
 
     if isServer:
 
@@ -540,14 +760,12 @@ if __name__ == '__main__':
 
     else:
 
-        lport = random.randint(30000, 31000)
-        #lport = defaultPort
+        if re:
+            lport = argPort
+        else:
+            lport = random.randint(30000, 31000)
 
         # node_manager = NodeManager('0.0.0.0', [(serverIP, defaultPort)], lport, isServer, True, False, expectedClientNum, isServer)
-
-
-
-
         node_manager = NodeManager('127.0.0.1', [(serverIP, defaultPort)], lport, isServer, True, False, expectedClientNum, isServer)
         blockchain = node_manager.blockchain
 

@@ -1538,31 +1538,31 @@ class NodeManager(object):
         print("root",self.tablsp.rootList)
 
         ###如果根节点不够则注册成根节点
-       # if len(self.tablsp.rootList)<1:
-        #        print("start:",tuple(self.tablsp.basetable))
-         #       self.tablsp.num=len(self.tablsp.rootList)
-          #      self.tablsp.rootList.append(tuple(self.tablsp.basetable))  
+        # if len(self.tablsp.rootList)<1:
+        #   print("start:",tuple(self.tablsp.basetable))
+        #   self.tablsp.num=len(self.tablsp.rootList)
+        #   self.tablsp.rootList.append(tuple(self.tablsp.basetable))  
                  
-                #if self.tablsp.rootList[x]==tuple(self.tablsp.basetable):
-                 #      self.tablsp.num==x
-                  #     break
+                # if self.tablsp.rootList[x]==tuple(self.tablsp.basetable):
+                #     self.tablsp.num==x
+                #     break
                 ###注册完后广播给其他节点
-            #    self.generateRoot(self.tablsp.rootList)
+                #     self.generateRoot(self.tablsp.rootList)
         ###区号告知根节点
         
         for node in self.tablsp.rootList:
-                self.tellDistriction(self.tablsp.num,node)
-#######################
+            self.tellDistriction(self.tablsp.num,node)
+        #######################
         print("seed_nodes:  ",seed_nodes)#test
         self.committee_member = seed_nodes###continue
 
         for seed_node in seed_nodes:
-	        #规范ip
+	        # 规范ip
             if seed_node.ip=="localhost":
                 seed_node.ip="127.0.0.1"
-	        #判断是否已经存在在邻居中
-            #flag=self.tablsp.judnei(seed_node)
-	        #   print (self.tablsp.basetable[1])
+	        # 判断是否已经存在在邻居中
+            # flag=self.tablsp.judnei(seed_node)
+	        # print (self.tablsp.basetable[1])
             flag=0
             if flag==0: 
                 # 不在邻居中 将该节点放入邻居中
@@ -1577,11 +1577,11 @@ class NodeManager(object):
                 self.sendversion(seed_node,
                             Version(1, int(time.time()), self.node_id, seed_node.node_id,
                                     db.get_block_height(self.blockchain.get_wallet_address()),d))
-	#建立邻居完毕后整理lsp
+	    # 建立邻居完毕后整理lsp
         self.tablsp.generatelsp()
-	#print "neighbour"
-	#print self.tablsp.lsp
-    #########################################
+	    # print "neighbour"
+	    # print self.tablsp.lsp
+        #########################################
         for seed_node in seed_nodes:
             self.iterative_find_nodes(self.client.node_id, seed_node)
 
@@ -1589,10 +1589,10 @@ class NodeManager(object):
             for seed_node in self.buckets.get_all_nodes():
                 self.iterative_find_nodes(self.client.node_id, seed_node)       
         self.numSeedNode = len(seed_nodes)
-    #########################################    
-  #  def self.generateRoot(self,rootList)
-   #     payload=(rootList)
-    #    msg_obj=packet.Message("generateRoot",payload)
+        #########################################    
+        # def self.generateRoot(self,rootList)
+        # payload=(rootList)
+        # msg_obj=packet.Message("generateRoot",payload)
     def cancelkid(self,sub_address):
         self.tablsp.inreceived_kids.remove(sub_address)
         
@@ -1617,11 +1617,11 @@ class NodeManager(object):
         self.client.respoflspr(sock,target_node_address,msg_bytes)
 
     def simubroad(self,message):
-	    #print ("enter simu")
-	#message放入端口中储存
-	#    self.server.node_manager.tablsp.addmessage(message)
-        #self.asklsp()#发送收集请求
-        #先把广播信息发给树根，由树根节点进行广播
+	    # print ("enter simu")
+	    # message放入端口中储存
+	    # self.server.node_manager.tablsp.addmessage(message)
+        # self.asklsp()#发送收集请求
+        # 先把广播信息发给树根，由树根节点进行广播
 	    
 	    payload=message
 	    self.tablsp.messagestart.append(message)#超过5条后删除第1条
@@ -1651,62 +1651,56 @@ class NodeManager(object):
             self.client.asklsp(self.server.socket,target_node_address,msg_bytes)
 
     def feedback(self,target_node_address):
-            port=self.server.node_manager.tablsp.basetable[1]
-            ip=self.server.node_manager.tablsp.basetable[0]
-            sub_address=(ip,port)
-            payload=packet.feedback(sub_address)
-            msg_obj=packet.Message("feedback",payload)
-            msg_bytes = pickle.dumps(msg_obj)
-            self.client.feedback(self.server.socket,
-                        target_node_address,msg_bytes)
+        port=self.server.node_manager.tablsp.basetable[1]
+        ip=self.server.node_manager.tablsp.basetable[0]
+        sub_address=(ip,port)
+        payload=packet.feedback(sub_address)
+        msg_obj=packet.Message("feedback",payload)
+        msg_bytes = pickle.dumps(msg_obj)
+        self.client.feedback(self.server.socket,
+                    target_node_address,msg_bytes)
 
             
             
-    def broadcast(self,message,tree,dictlsp):
-        
-	
-            child=self.tablsp.findkids(dictlsp,tree)#先用这个数组测试功能
-            tree=self.tablsp.deletenode(tree,dictlsp)#删除该节点作为子节点的子节点的情况       
-            self.tablsp.tree=tree
-            self.tablsp.dictlsp=dictlsp
-            address=(self.tablsp.basetable[0],self.tablsp.basetable[1])
-            payload=packet.broadcast(message,tree,dictlsp,address)
-            msg_obj=packet.Message("broadcast",payload)
-            msg_bytes=pickle.dumps(msg_obj)
-            #print("--in broadcast--",message)
-            x=0 #用于记录这个路由的位置
-            k=len(child)#k=0时代表是叶子节点,叶子节点进行一次泛洪
-            self.tablsp.inreceived_kids=[]#清空
-            sock=self.server.socket
-            for i in range(0,k):
-                self.tablsp.inreceived_kids.append((child[i][0],child[i][1]))#初始化未收到列表收到一个删除一个序号
-        #根据Id找到对应的路由信息
-	#找到对应的ip,port
-            for i in range(k):
+    def broadcast(self,message,tree,dictlsp):	
+        child=self.tablsp.findkids(dictlsp,tree)#先用这个数组测试功能
+        tree=self.tablsp.deletenode(tree,dictlsp)#删除该节点作为子节点的子节点的情况       
+        self.tablsp.tree=tree
+        self.tablsp.dictlsp=dictlsp
+        address=(self.tablsp.basetable[0],self.tablsp.basetable[1])
+        payload=packet.broadcast(message,tree,dictlsp,address)
+        msg_obj=packet.Message("broadcast",payload)
+        msg_bytes=pickle.dumps(msg_obj)
+        #print("--in broadcast--",message)
+        x=0 #用于记录这个路由的位置
+        k=len(child)#k=0时代表是叶子节点,叶子节点进行一次泛洪
+        self.tablsp.inreceived_kids=[]#清空
+        sock=self.server.socket
+        for i in range(0,k):
+            self.tablsp.inreceived_kids.append((child[i][0],child[i][1]))#初始化未收到列表收到一个删除一个序号
+    #根据Id找到对应的路由信息
+    #找到对应的ip,port
+        for i in range(k):
+            ip=child[i][0]
+            port=child[i][1]
+            target_node_address=(ip,port)
+            
+            print("+++i've broadcast+++")
+            self.client.broadcast(sock,target_node_address,msg_bytes)
+        if k==0:
+            self.floodAtLeaf(message)#进行泛洪
+            #等待一段时间后对未确认收到广播的节点的子节点发送广播
+
+        time.sleep(0.4)
+        for node in self.tablsp.inreceived_kids:
+            node_kids=self.tablsp.find_others_kids(node)
+            for i in range(len(node_kids)):
                 ip=child[i][0]
                 port=child[i][1]
                 target_node_address=(ip,port)
-                
-                print("+++i've broadcast+++")
+                print("+++i've broadcast for the disconnect+++")
                 self.client.broadcast(sock,target_node_address,msg_bytes)
-            if k==0:
-                self.floodAtLeaf(message)#进行泛洪
-             #等待一段时间后对未确认收到广播的节点的子节点发送广播
-   
-            time.sleep(0.4)
-            for node in self.tablsp.inreceived_kids:
-                    node_kids=self.tablsp.find_others_kids(node)
-                    for i in range(len(node_kids)):
-                       ip=child[i][0]
-                       port=child[i][1]
-                       target_node_address=(ip,port)
-                       print("+++i've broadcast for the disconnect+++")
-                       self.client.broadcast(sock,target_node_address,msg_bytes)
-                       
-                    
-            
-            
-            
+
 
     def floodAtLeaf(self,message):
         payload=message
@@ -1747,35 +1741,24 @@ class NodeManager(object):
                    new_node_address,msg_bytes)
 
     def insert_new_node(self,new_node):
-        new_seed_node=Node(new_node['ip'],
-        new_node['port'],new_node['node_id'])
-	flag=self.tablsp.judnei(new_seed_node)
-	if flag == 0:
-        	self.committee_member.append(new_seed_node)
+        new_seed_node = Node(new_node['ip'], new_node['port'],new_node['node_id'])
+        flag = self.tablsp.judnei(new_seed_node)
+        if not flag:
+            self.committee_member.append(new_seed_node)
         
-        	self.tablsp.neighbourip.append(new_seed_node.ip)
-        	self.tablsp.neighbourport.append(new_seed_node.port)
-                #设置距离
-        	d=random.randint(1,4)
-        	print ("insert distance in bootrs")
-        	print (d)
-        	self.tablsp.neighbourdistance.append(d)
-        # 握手,加入lsptab中
-        	self.sendversion(new_seed_node,
+            self.tablsp.neighbourip.append(new_seed_node.ip)
+            self.tablsp.neighbourport.append(new_seed_node.port)
+            # 设置距离
+            d=random.randint(1,4)
+            print ("insert distance in bootrs")
+            print (d)
+            self.tablsp.neighbourdistance.append(d)
+            # 握手,加入lsptab中
+            self.sendversion(new_seed_node,
                             Version(1, int(time.time()), self.node_id, new_seed_node.node_id,
                                     db.get_block_height(self.blockchain.get_wallet_address()),d))
-	#建立邻居完毕后整理lsp
-        	self.tablsp.generatelsp()
-	else :
-		pass
-            
-       
-
-        
-
-
-        
-        
-
-
+            # 建立邻居完毕后整理lsp
+            self.tablsp.generatelsp()
+        else:
+            pass
 
