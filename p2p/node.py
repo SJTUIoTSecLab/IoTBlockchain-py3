@@ -975,11 +975,11 @@ class NodeManager(object):
         if not isServer:
             self.start()
 
-        print('[Info] start new node', self.ip, self.port, self.node_id)
+        print('\n[Info] Start New Node', self.ip, self.port, self.node_id)
 
     def start(self):
         # 矿工线程
-        print("[Info] start protocol")
+        print("[Info] Start Protocol")
         if self.is_committee:
             self.minner_thread.start()
 

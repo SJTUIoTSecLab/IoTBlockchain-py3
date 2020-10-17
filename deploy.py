@@ -18,8 +18,8 @@ from transaction import Transaction, Tx_vid, Tx_report, Tx_easy
 
 node_list = []
 defaultPort = 30134
-serverIP = "127.0.0.1" # "121.36.95.93"
-serverAddress = "127.0.0.1:30134" # "121.36.95.93:30134"
+serverIP = "121.36.95.93" # "127.0.0.1"
+serverAddress = "121.36.95.93:30134" # "127.0.0.1:30134"
 
 app = Flask(__name__)
 
@@ -744,8 +744,8 @@ if __name__ == '__main__':
 
     if isServer:
 
-        # node_manager = NodeManager('0.0.0.0', [(serverIP, defaultPort)], defaultPort, isServer, True, False, expectedClientNum, isServer)
-        node_manager = NodeManager('127.0.0.1', [(serverIP, defaultPort)], defaultPort, isServer, True, False, expectedClientNum, isServer)
+        node_manager = NodeManager('0.0.0.0', [(serverIP, defaultPort)], defaultPort, isServer, True, False, expectedClientNum, isServer)
+        # node_manager = NodeManager('127.0.0.1', [(serverIP, defaultPort)], defaultPort, isServer, True, False, expectedClientNum, isServer)
         blockchain = node_manager.blockchain
 
         print("Wallet address: %s" % blockchain.get_wallet_address())
@@ -775,8 +775,8 @@ if __name__ == '__main__':
         else:
             lport = random.randint(30000, 31000)
 
-        # node_manager = NodeManager('0.0.0.0', [(serverIP, defaultPort)], lport, isServer, True, False, expectedClientNum, isServer)
-        node_manager = NodeManager('127.0.0.1', [(serverIP, defaultPort)], lport, isServer, True, False, expectedClientNum, isServer)
+        node_manager = NodeManager('0.0.0.0', [(serverIP, defaultPort)], lport, isServer, True, False, expectedClientNum, isServer)
+        # node_manager = NodeManager('127.0.0.1', [(serverIP, defaultPort)], lport, isServer, True, False, expectedClientNum, isServer)
         blockchain = node_manager.blockchain
 
         print("Wallet address: %s" % blockchain.get_wallet_address())
