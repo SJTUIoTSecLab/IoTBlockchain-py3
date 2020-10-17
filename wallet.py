@@ -13,8 +13,8 @@ class Wallet(object):
     def __init__(self, genisus_node, port):
         if genisus_node:
             pubkey, privkey = self.get_genisus_keypair()
-        elif port >= 5001 and port <= 5009:
-            pubkey, privkey = self.get_keypair(port)
+        # elif port >= 5001 and port <= 5009:
+        #     pubkey, privkey = self.get_keypair(port)
         else:
             pubkey, privkey = rsa.newkeys(1024)
 
@@ -32,14 +32,14 @@ class Wallet(object):
         return pubkey, privkey
 
     
-    def get_keypair(self, port):
-        with open('rsa_keys/g'+str(port)+'_public.pem', 'r') as f:
-            pubkey = rsa.PublicKey.load_pkcs1(f.read().encode())
+    # def get_keypair(self, port):
+    #     with open('rsa_keys/g'+str(port)+'_public.pem', 'r') as f:
+    #         pubkey = rsa.PublicKey.load_pkcs1(f.read().encode())
 
-        with open('rsa_keys/g'+str(port)+'_private.pem', 'r') as f:
-            privkey = rsa.PrivateKey.load_pkcs1(f.read().encode())
+    #     with open('rsa_keys/g'+str(port)+'_private.pem', 'r') as f:
+    #         privkey = rsa.PrivateKey.load_pkcs1(f.read().encode())
 
-        return pubkey, privkey
+    #     return pubkey, privkey
 
     
     @staticmethod
