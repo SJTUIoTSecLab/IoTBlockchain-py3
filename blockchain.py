@@ -113,8 +113,8 @@ class Blockchain(object):
         """
         previous_block = self.get_last_block()
         next_index = previous_block.index + 1
-        if next_index == view:
-            print('generate block')
+        # if next_index == view:
+        #     print('generate block')
         previous_hash = previous_block.current_hash
         next_block = Block(
             index=next_index,
@@ -504,7 +504,7 @@ class Blockchain(object):
         :return:
         """
         nonce = 0
-        new_block_found = False
+        # new_block_found = False
         new_block_attempt = None
 
         # 验证每一笔交易的有效性(备注：从最新的开始验证)
@@ -527,11 +527,11 @@ class Blockchain(object):
         self.current_transactions = sorted(self.current_transactions, key=lambda x: (x.timestamp, x.txid),
                                            reverse=False)  # 时间由小到大排，时间相同按txid排
 
-        print("before merkle:")
-        print("current tx:", len(self.current_transactions))
-        print("received tx:", len(self.received_transactions))
-        print("send tx:", len(self.send_transactions))
-        print(self.current_transactions)
+        # print("before merkle:")
+        # print("current tx:", len(self.current_transactions))
+        # print("received tx:", len(self.received_transactions))
+        # print("send tx:", len(self.send_transactions))
+        # print(self.current_transactions)
 
         if len(self.current_transactions) == 0:
             merkletrees = MerkleTrees([Tx_easy('None', 'None', 0, 0)])
@@ -545,7 +545,7 @@ class Blockchain(object):
 
         # new_block_attempt = self.generate_block(merkleroot, time, nonce, view)
         new_block_attempt = self.generate_block_by_request_message(merkleroot, time, nonce, view)
-        print("new block found")
+        print("[+] New Block Generated")
         # end_timestamp = int(time())
         # cos_timestamp = end_timestamp - timestamp
         # print '[Info] New block found with nonce ' + str(nonce) + ' in ' + str(

@@ -98,7 +98,7 @@ class LSP(object):
 		#确定字典中的对应序号
                 num=0
                 for num in range(k+1):
-                         print ("dict:",self.dictlsp,"num",num)
+                        #  print ("dict:",self.dictlsp,"num",num)
                          if self.dictlsp[num]==node:
                                 break
 		
@@ -120,8 +120,8 @@ class LSP(object):
                             break
                     c[i][num]=edge
                     c[num][i]=edge               #检查
-        print ("lspgroup生成的树")
-        print (c)
+        # print ("lspgroup生成的树")
+        # print (c)
         self.tree=c
 
         #将不在该区的点排除
@@ -147,7 +147,7 @@ class LSP(object):
         notin=[]
         for i in range(k):
             notin.append(i+1)
-        print("notin",notin)
+        # print("notin",notin)
         while notin: #notin非空
             #一次查找
             flag1=0 #记录involved中最小路径的位置

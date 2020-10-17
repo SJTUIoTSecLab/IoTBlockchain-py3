@@ -40,7 +40,7 @@ def server_hello():
         for peer in node_list:
             if node != peer:
                 seed_list.append({"node_id": peer["node_id"], "ip": peer["ip"], "port": peer["port"]})
-        print(seed_list)
+        # print(seed_list)
         bootstrap(str(node["ip"]) + ":" + str(node["port"]), seed_list)
         time.sleep(5)
         node_manager.introduce_neighbour(node_list)
@@ -98,10 +98,10 @@ async def start_simulation():
         for peer in node_list:
             if node != peer:
                 seed_list.append({"node_id": peer["node_id"], "ip": peer["ip"], "port": peer["port"]})
-        print(seed_list)
+        # print(seed_list)
         bootstrap(str(node["ip"]) + ":" + str(node["port"]), seed_list)
 
-    print("ok")
+    # print("ok")
 
     node_manager.start()
 
@@ -212,7 +212,7 @@ def perform_transaction(sender, receiver, amount=-1):
 
     amount = random.randint(1, 10)
 
-    print('send from node ' + str(sender) + ' to node ' + str(receiver) + ' with amount:' + str(amount))
+    print('[Tx] send from node ' + str(sender) + ' to node ' + str(receiver) + ' with amount:' + str(amount))
     simulate_tx(sender_address, sender_wallet, receiver_wallet, amount)
 
 
@@ -714,6 +714,15 @@ def block_info():
 
     return jsonify(response), 200
 
+def print_hello():
+    print('''
+    ███████╗ ██████╗       ██╗   ██╗███╗   ██╗
+    ██╔════╝██╔════╝       ██║   ██║████╗  ██║
+    ███████╗██║  ███╗█████╗██║   ██║██╔██╗ ██║
+    ╚════██║██║   ██║╚════╝╚██╗ ██╔╝██║╚██╗██║
+    ███████║╚██████╔╝       ╚████╔╝ ██║ ╚████║
+    ╚══════╝ ╚═════╝         ╚═══╝  ╚═╝  ╚═══╝                                   
+    ''')
 
 if __name__ == '__main__':
 
@@ -753,6 +762,7 @@ if __name__ == '__main__':
             'pubkey_hash': Script.sha160(str(blockchain.wallet.pubkey))
         }
         node_list.append(serverNode)
+        print_hello()
         loop =asyncio.get_event_loop()
         loop.run_until_complete(start_simulation())
 
@@ -778,8 +788,9 @@ if __name__ == '__main__':
         # shall be await app started
         time.sleep(5)
         if re:
-            print('---restart---')
+            print('-------Restart-------')
             request_seeds(blockchain.get_wallet_address())
+        print_hello()
         client_hello(is_new_node)
 
         thread.join()

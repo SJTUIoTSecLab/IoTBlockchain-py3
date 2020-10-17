@@ -102,10 +102,10 @@ class ProcessMessages(socketserver.BaseRequestHandler):#继承SocketServer.BaseR
         	message=payload.message
 		dictlsp=payload.dictlsp
         	#将广播信息计入本节点
-		print("here port:")
-		print(self.server.node_manager.tablsp.basetable[1])
+		# print("here port:")
+		# print(self.server.node_manager.tablsp.basetable[1])
 		self.server.node_manager.tablsp.addmessage(message)
-		print(self.server.node_manager.tablsp.message)
+		# print(self.server.node_manager.tablsp.message)
         	self.server.node_manager.broadcast(message,tree,dictlsp)
 
     def handle_version(self, payload):
@@ -254,12 +254,12 @@ class NodeManager(object):
     def broadcast(self,context,tree,dictlsp):
         
 	
-	print("mark dictlsp")
-	print(dictlsp)
+	# print("mark dictlsp")
+	# print(dictlsp)
 	child=self.tablsp.findkids(dictlsp,tree)#先用这个数组测试功能
 	tree=self.tablsp.deletenode(tree,dictlsp)#删除该节点作为子节点的子节点的情况
-	print("mark 删除后的树")
-	print(tree)
+	# print("mark 删除后的树")
+	# print(tree)
 	payload=packet.broadcast(context,tree,dictlsp)
         msg_obj=packet.Message("broadcast",payload)
         msg_bytes=pickle.dumps(msg_obj)
@@ -284,7 +284,7 @@ class NodeManager(object):
     #     msg_bytes = pickle.dumps(msg_obj)
     #     self.client.store(sock, target_node_address, msg_bytes)
     def simubroad(self,message):
-        print("enter simu")
+        # print("enter simu")
 	#message放入端口中储存
 	self.server.node_manager.tablsp.addmessage(message)
         self.asklsp()#发送收集请求
@@ -318,15 +318,15 @@ class NodeManager(object):
 	    #判断是否已经存在在邻居中
 	   
 	    flag=self.tablsp.judnei(seed_node)#不同的格式怎么处理todo
-	    print(self.tablsp.basetable[1])
+	    # print(self.tablsp.basetable[1])
 	    if flag==0 :#不在邻居中
             #将该节点放入邻居中
 	    	self.tablsp.neighbourip.append(seed_node.ip)
 	    	self.tablsp.neighbourport.append(seed_node.port)
 	    #设置距离
 	   	d=random.choice((1,2,3,4,40,40,40,40))
-		print("insert distance in bootrs")
-		print(d)
+		# print("insert distance in bootrs")
+		# print(d)
 	    	self.tablsp.neighbourdistance.append(d)
             # 握手,加入lsptab中
             	self.sendversion(seed_node,
@@ -334,8 +334,8 @@ class NodeManager(object):
                                      db.get_block_height(self.blockchain.get_wallet_address()),d))
 	#建立邻居完毕后整理lsp
 	self.tablsp.generatelsp()
-	print("neighbour")
-	print(self.tablsp.lsp)
+	# print("neighbour")
+	# print(self.tablsp.lsp)
 	   
 
         # for seed_node in seed_nodes:
@@ -437,10 +437,10 @@ class NodeManager(object):
         # k_nearest_ndoes = self.iterative_find_nodes(data_key)
         # if not k_nearest_ndoes:
         #     self.data[data_key] = tx
-	print("sa")
-	print(self.tablsp.neighbourip)
-	print(self.tablsp.neighbourport)
-        print(k)
+	# print("sa")
+	# print(self.tablsp.neighbourip)
+	# print(self.tablsp.neighbourport)
+    #     print(k)
 	
         for x in range(k):
             tx.from_id = self.node_id

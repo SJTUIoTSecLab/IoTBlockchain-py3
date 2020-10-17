@@ -119,7 +119,7 @@ def write_node_id_to_db(wallet_address, id):
     with open(wallet_address + '/IoTBlockchain.conf', 'w+') as f:
         cf.write(f)
     
-    print("write node_id to db")
+    # print("write node_id to db")
 
 
 def write_to_db(wallet_address, block):
@@ -150,7 +150,7 @@ def write_to_db(wallet_address, block):
     with open(wallet_address + '/' + str(block.current_hash), 'wb') as f:
         pickle.dump(block, f)
     
-    print("write to db")
+    # print("write to db")
 
 
 def write_failhash_to_db(wallet_address, view, failhash):
@@ -178,7 +178,7 @@ def write_failhash_to_db(wallet_address, view, failhash):
     with open(wallet_address + '/IoTBlockchain.conf', 'w+') as f:
         cf.write(f)
     
-    print("write failhash to db")
+    # print("write failhash to db")
 
 def get_block_hash(wallet_address, index):
     cf = configparser.ConfigParser()

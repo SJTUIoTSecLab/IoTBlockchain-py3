@@ -134,10 +134,10 @@ class ProcessMessages(socketserver.BaseRequestHandler):
 
 
     def handle_new_connect(self,payload):
-        print("++++++",payload)#test
+        # print("++++++",payload)#test
         address_list=payload.address_list
         new_node=payload.new_node
-        print(address_list,new_node)
+        # print(address_list,new_node)
         self.server.node_manager.inform_neighbour(address_list,new_node)
 
        
@@ -188,7 +188,7 @@ class ProcessMessages(socketserver.BaseRequestHandler):
             
 	    message=payload
 	    num=self.server.node_manager.tablsp.num
-	    print("sendToRoot",message)
+	    # print("sendToRoot",message)
 	    y=self.server.node_manager.tablsp.basetable[1]
 	    x=str(message[1])+str(y)
 	    t=self.server.node_manager.tablsp.tree
@@ -196,12 +196,12 @@ class ProcessMessages(socketserver.BaseRequestHandler):
 	    #print("--h-sendtoroot--",message)
             #yxtu用于调试
 	#message放入端口中储存,如果端口中有信息了就不能再放入
-	    print("message in handle_sendtoroot:",self.server.node_manager.tablsp.message)
+	    # print("message in handle_sendtoroot:",self.server.node_manager.tablsp.message)
 	    while self.server.node_manager.tablsp.message:#等待
 	           pass
 	       #print("mark0 in sendtoroot")
 	    self.server.node_manager.tablsp.addmessage(message)
-	    print("message in handle_sendtoroot:",self.server.node_manager.tablsp.message)
+	    # print("message in handle_sendtoroot:",self.server.node_manager.tablsp.message)
 	#向自己的广播树广播
 
 	    #if not t:#如果还没生成树，则请求lsp信息 
@@ -238,7 +238,7 @@ self.server.node_manager.tablsp.basetable[1])
         #target_adress应该是(client_ip,client_port)的形式 元组数据类型
         if self.server.node_manager.tablsp.flag==0:
                 if source_node!=node_self:
-                          print("enter handle_lspr")
+                        #   print("enter handle_lspr")
                           self.server.node_manager.tablsp.flag=1
                           self.server.node_manager.lspr(num)
         #向给自己发送lspr的点发送信息(自己的lsp),并且将自己的flag设为１
@@ -247,7 +247,7 @@ list(source_node))#向自己路由表中的节点发送,需要在其他节点
                 
         
     def handle_RESP(self,payload):#收到许多含有lsp的消息，处理这样的消息todo
-        print("enter handle_RESP")
+        # print("enter handle_RESP")
         lsp=payload.lsp
         if self.server.node_manager.tablsp.flagg==0:#当还能接受时（计算生成树之前）
               self.server.node_manager.tablsp.lspgroup.append(lsp)#将得到的lsp放入lspgroup中
@@ -259,17 +259,17 @@ list(source_node))#向自己路由表中的节点发送,需要在其他节点
                   self.server.node_manager.tablsp.dictlspfun()#生成字典
                   dictlsp=self.server.node_manager.tablsp.dictlsp
                   tree=self.server.node_manager.tablsp.solvetree()#最小生成树矩阵
-                  print("最小生成树:",tree)
+                #   print("最小生成树:",tree)
                   y=self.server.node_manager.tablsp.basetable[1]
                   x=str(self.server.node_manager.tablsp.tree)+str(y)
                   #print("handle_resp",x)
-                  print("message:",self.server.node_manager.tablsp.message)    
+                #   print("message:",self.server.node_manager.tablsp.message)    
                   if self.server.node_manager.tablsp.message:
                        msg_bytes=self.server.node_manager.tablsp.message.pop()
             #取出后清空tablsp.message
                        #print("message stored in tablsp=",
                              #    msg_bytes)
-                       print("enter handle_resp broadcast with message in broadcast:",self.server.node_manager.tablsp.message)              
+                    #    print("enter handle_resp broadcast with message in broadcast:",self.server.node_manager.tablsp.message)              
                        self.server.node_manager.broadcast(msg_bytes,
                                              tree,dictlsp)
             #告诉其他节点要传播的信息以及最小生成树
@@ -299,7 +299,7 @@ list(source_node))#向自己路由表中的节点发送,需要在其他节点
             #print ("----------------")
             
             flag=self.server.node_manager.tablsp.check(message)#用于判断message是否存在在messagestart中 true为simubroad发起节点
-            print("message in handle_broadcast",message)
+            # print("message in handle_broadcast",message)
             if message[1]=="sendrequest" and flag==False:#原来for的实现
                 
                 self.server.node_manager.client.sendrequest(self.server.socket, (ip, port), message[0])
@@ -403,7 +403,7 @@ list(source_node))#向自己路由表中的节点发送,需要在其他节点
         pass
 
     def handle_sendalltx(self, payload):
-        print("------handle alltx------")
+        print("[+] Handle All-Tx")
         all_tx = payload["alltx"]
         tm = payload["time"]
         # GST = 10
@@ -427,18 +427,23 @@ list(source_node))#向自己路由表中的节点发送,需要在其他节点
                 #         break
                 # if flag:
                 self.server.node_manager.blockchain.current_transactions.append(new_tx)
-            print("+++++an alltx added,the transaction now:+++++")            
-            print("send tx:", len(self.server.node_manager.blockchain.send_transactions))
-            print("received tx:", len(self.server.node_manager.blockchain.received_transactions))
-            print("current tx:", len(self.server.node_manager.blockchain.current_transactions))
+            # print("+++++an alltx added,the transaction now:+++++")            
+            # print("send tx:", len(self.server.node_manager.blockchain.send_transactions))
+            # print("received tx:", len(self.server.node_manager.blockchain.received_transactions))
+            # print("current tx:", len(self.server.node_manager.blockchain.current_transactions))
+
+    def print_message(self, message, mtype):
+        print("[+] " + mtype + " Messages Now: [", end = "")
+        for i in message[0:-1]:
+            print(i[:6], end = ', ')
+        print(message[-1][:6], end = ']\n')
 
     def handle_sendblockhash(self, payload):
-        print("------handle blockhash: the start of reply------")
+        print("[+] Handle Block-Hash")
         # with self.server.node_manager.lock:
         if payload['view'] == self.server.node_manager.view:
             self.server.node_manager.commitMessages.append(payload['blockhash'])
-        print("+++++commitMessage now:+++++")
-        print(self.server.node_manager.commitMessages)
+        self.print_message(self.server.node_manager.commitMessages, "Commit")
         if not self.server.node_manager.finishflag:
             for b in self.server.node_manager.commitMessages:
                 count = 0
@@ -447,7 +452,7 @@ list(source_node))#向自己路由表中的节点发送,需要在其他节点
                         count += 1
                 if (count > old_div(self.server.node_manager.numSeedNode, 2)):
                     # db.write_to_db(blockchain.wallet.address, new_block)
-                    print("-------------------I am correct!!!!!!!!--------------------")
+                    print("[+] I am correct!")
                     self.server.node_manager.finishflag = True
                     self.server.node_manager.hashcache = b
                     self.server.node_manager.asyn[self.server.node_manager.view] = self.server.node_manager.numSeedNode - \
@@ -462,7 +467,7 @@ list(source_node))#向自己路由表中的节点发送,需要在其他节点
               self.server.node_manager.commitMessages.count(self.server.node_manager.hashcache)
 
     def handle_sendreply(self, payload):
-        print("------handle reply: the start of pre-prepare------")
+        print("[+] Handle Reply")
         # with self.server.node_manager.lock:
         if payload['view'] == self.server.node_manager.view:
             self.server.node_manager.replyMessage += 1
@@ -472,14 +477,14 @@ list(source_node))#向自己路由表中的节点发送,需要在其他节点
                                                                  round(tt - self.server.node_manager.starttime, 3)]
             self.server.node_manager.successflag = True
             self.server.node_manager.replyMessage = 0
-            print("next")
+            print("[+] Next View")
             while int(time.time()) < self.server.node_manager.step + self.server.node_manager.starttime:
                 time.sleep(1)
             if self.server.node_manager.leadershift:
                 self.server.node_manager.sendrequestmessage(payload)
                 self.server.node_manager.is_primary = False
             else:
-                print("ready to sendrequest")
+                print("[+] Ready to Sendrequest")
                 self.server.node_manager.sendrequest(payload['blockhash'])
 
     def handle_sendrequestmessage(self,payload):
@@ -490,7 +495,7 @@ list(source_node))#向自己路由表中的节点发送,需要在其他节点
     def handle_sendrequest(self, payload):
         if payload['newview'] <= self.server.node_manager.view:
             return
-        print("------handle request: the start of prepare------")
+        print("[+] Handle request")
         self.server.node_manager.starttime = payload["start"]
         # with self.server.node_manager.lock:
         if payload["hash"] != -1:
@@ -502,8 +507,7 @@ list(source_node))#向自己路由表中的节点发送,需要在其他节点
                 if self.server.node_manager.view >= 1:
                     db.write_to_db(self.server.node_manager.blockchain.wallet.address, self.server.node_manager.blockcache)
                 
-            print("the hash of last view:")
-            print(payload["hash"])
+            print("[+] Last Hash:", payload["hash"])
             self.server.node_manager.primary_node_address = payload["address"]
             if self.server.node_manager.view == 0:
                 cf = configparser.ConfigParser()
@@ -517,7 +521,7 @@ list(source_node))#向自己路由表中的节点发送,需要在其他节点
                 tmp = time.time()
                 if self.server.node_manager.lastblocktime['view'] == self.server.node_manager.view - 1 and self.server.node_manager.lastblocktime['time'] != -1:
                     self.server.node_manager.blocktime[self.server.node_manager.view] = round(tmp - self.server.node_manager.lastblocktime['time'], 3)
-                    print('+++handle set block time+++')
+                    # print('+++handle set block time+++')
                 self.server.node_manager.lastblocktime['time'] = tmp
                 self.server.node_manager.lastblocktime['view'] = self.server.node_manager.view
                 self.server.node_manager.commitMessages = []
@@ -539,15 +543,15 @@ list(source_node))#向自己路由表中的节点发送,需要在其他节点
                     self.server.node_manager.blockchain.send_transactions.append(tx)
             self.server.node_manager.finishflag = False
             self.server.node_manager.successflag = False
-            print("view:", self.server.node_manager.view)
+            print("[+] View:", self.server.node_manager.view)
             if (self.server.node_manager.is_committee):
-                print("the tx we want to send:")
-                print(self.server.node_manager.blockchain.send_transactions)
+                # print("the tx we want to send:")
+                # print(self.server.node_manager.blockchain.send_transactions)
                 self.server.node_manager.sendalltx(self.server.node_manager.blockchain.send_transactions)
                 self.server.node_manager.startflag = True
         else:
-            print("bft failed, start again")
-            print("view:", self.server.node_manager.view)
+            print("[+] BFT Failed, Start Again")
+            print("[+] View:", self.server.node_manager.view)
             self.server.node_manager.GST = payload["GST"]
             self.server.node_manager.primary_node_address = payload["address"]
             self.server.node_manager.commitMessages = []
@@ -567,7 +571,7 @@ list(source_node))#向自己路由表中的节点发送,需要在其他节点
                 self.server.node_manager.startflag = True
         self.server.node_manager.replyflag = False
         if payload["newview"] > self.server.node_manager.view:
-            print("view fall behind")
+            print("[+] View Fall Behind")
             cf = configparser.ConfigParser()
             cf.read(self.server.node_manager.blockchain.get_wallet_address() + '/IoTBlockchain.conf')
             for i in range(1, payload['newview']):
@@ -575,8 +579,8 @@ list(source_node))#向自己路由表中的节点发送,需要在其他节点
                     cf.get('index', str(i))
                 except configparser.NoOptionError as e:
                     self.server.node_manager.failhash.append(i)
-            print("view check done")
-            print(self.server.node_manager.failhash)
+            print("[+] View Check Done")
+            print("[+] Fail List:", self.server.node_manager.failhash)
             self.server.node_manager.view = payload["newview"]
 
     def handle_sendoff(self,payload):
@@ -584,9 +588,9 @@ list(source_node))#向自己路由表中的节点发送,需要在其他节点
     
     def handle_sendcorrect(self,payload):
         #找有没有对应的块
-        print("------handle send correct------")
+        print("[+] Handle Correct")
         obj = db.get_block_data_by_index(self.server.node_manager.blockchain.get_wallet_address(), payload["hash"])
-        print('correct block :', obj)
+        # print('correct block :', obj)
         if obj:
             self.server.node_manager.sendblock({"block": obj, "address": payload["address"]})
         else:
@@ -596,10 +600,10 @@ list(source_node))#向自己路由表中的节点发送,需要在其他节点
         '''
         处理收到的某些缺失view的信息
         '''
-        print("---handle send block---")
+        print("[+] Handle Block")
         self.server.node_manager.receiveblock = True
         if isinstance(payload, Block):
-            print(payload)
+            # print(payload)
             idx = payload.index
             self.server.node_manager.failhash.remove(idx)
             del(self.server.node_manager.hash_note[idx])
@@ -612,7 +616,7 @@ list(source_node))#向自己路由表中的节点发送,需要在其他节点
                 msg_bytes = pickle.dumps(msg_obj)
                 self.server.node_manager.client.sendcorrect(self.server.socket, self.server.node_manager.hash_note[idx][0], msg_bytes)
             else:
-                print("cannot find correct")
+                print("[+] Cannot Find Correct")
         if not self.server.node_manager.failhash:
             self.server.node_manager.fail = False
 
@@ -975,7 +979,7 @@ class NodeManager(object):
 
     def start(self):
         # 矿工线程
-        print("start protocol")
+        print("[Info] start protocol")
         if self.is_committee:
             self.minner_thread.start()
 
@@ -1073,7 +1077,7 @@ class NodeManager(object):
         return k_nearest_nodes_util.get_target_value()
 
     def restart_bootstrap(self, seednodes):
-        print("+++restart bootstrap+++")
+        # print("+++restart bootstrap+++")
         self.committee_member = seednodes
         self.numSeedNode = len(seednodes)
 
@@ -1132,9 +1136,9 @@ class NodeManager(object):
 
             if not (not self.startflag or self.receivealltx < len(self.committee_member)-1 or # 
                     int(time.time()) <= self.maxTime):
-                print("-------collected enough tx: the start of commit-------")
+                print("[+] All Tx Collected")
                 # with self.lock:
-                print('current:', len(self.blockchain.current_transactions))
+                # print('current:', len(self.blockchain.current_transactions))
                 self.timetmp = time.time()
                 self.receivealltx_last = self.receivealltx
                 self.txinblock = len(self.blockchain.current_transactions)
@@ -1145,7 +1149,7 @@ class NodeManager(object):
                 self.startflag = False
 
             if self.replyflag and self.is_primary and (int(time.time())>self.replytime + 10):
-                print("++++++++++BFT FAILED++++++++++")
+                print("[+] BFT FAILED")
                 self.sendrequest(-1)
 
             # if self.failhash and self.receiveblock:
@@ -1261,7 +1265,7 @@ class NodeManager(object):
         :param payload 上一轮commit的hash:
         :return:
         """
-        print("-------send request: the end of pre-prepare-------")
+        print("[+] Send Request")
         if payload != -1:
             self.starttime = int(time.time()) #主节点记录轮次开始时间
             if payload != self.blockcache.current_hash:
@@ -1273,11 +1277,11 @@ class NodeManager(object):
                 # 自身确认入链
                 if self.view >= 1:
                     db.write_to_db(self.blockchain.wallet.address, self.blockcache)
-                    print("blockcache :", self.blockcache)
+                    # print("blockcache :", self.blockcache)
             tmp = time.time()
             if self.lastblocktime['view'] == self.view - 1 and self.lastblocktime['time'] != -1:
                 self.blocktime[self.view] = round(tmp - self.lastblocktime['time'], 3)
-                print('++++set block time+++')
+                # print('++++set block time+++')
             self.lastblocktime['time'] = tmp
             self.lastblocktime['view'] = self.view
             if self.view >=1:
@@ -1295,7 +1299,7 @@ class NodeManager(object):
             self.blockchain.lasthash = [self.view, payload]
             self.view += 1
             self.successflag = False
-            print("view:", self.view)
+            print("[+] View:", self.view)
             # for node in self.committee_member:    
             #     msg_obj = packet.Message("sendrequest", 
             #       {"hash":payload, "address": (self.client.ip,self.client.port), "start": self.starttime, 'newview': self.view})
@@ -1341,7 +1345,7 @@ class NodeManager(object):
             self.receivealltx -= self.receivealltx_last
             # print "transaction list reset"
             self.successflag = False
-            print("view:", self.view)
+            print("[+] View:", self.view)
             # print "++++++++++++++sendrequest&tx++++++++++++++++"
             self.sendalltx(self.blockchain.send_transactions)
             self.startflag = True
@@ -1382,16 +1386,16 @@ class NodeManager(object):
         print("...")
 
     def sendalltx(self, alltx):
-        print("------send alltx: the end of prepare------")
+        print("[+] Send All-Tx")
         # print "before sendalltx"
         # print "send tx:", len(self.blockchain.send_transactions)
         # print "received tx:", len(self.blockchain.received_transactions)
         # print "current tx:", len(self.blockchain.current_transactions)
         tm = int(time.time())
-        print("self.committee_member:",self.committee_member)#test
+        # print("self.committee_member:",self.committee_member)
 
         for node in self.committee_member:
-            print("sendalltx to ", (node.ip, node.port))
+            print("[+] Send to", (node.ip, node.port))
             msg_obj = packet.Message("sendalltx", {"alltx":alltx, "time":tm})
             msg_bytes = pickle.dumps(msg_obj)
             self.client.sendalltx(self.server.socket, (node.ip, node.port), msg_bytes)
@@ -1409,8 +1413,7 @@ class NodeManager(object):
         :param blockhash:
         :return:
         """
-        print("------send blockhash: the end of commit------")
-        print("blockhash :", blockhash)
+        print("[+] Send Blockhash:", blockhash)
         for node in self.committee_member:
             msg_obj = packet.Message("sendblockhash", {'blockhash': blockhash, 'view': self.view})
             msg_bytes = pickle.dumps(msg_obj)
@@ -1428,23 +1431,23 @@ class NodeManager(object):
             
 
     def sendreply(self, blockhash):
-        print("------send reply: the end of reply------")
+        print("[+] Send Reply")
         msg_obj = packet.Message("sendreply", {'blockhash': blockhash, 'view': self.view})
         msg_bytes = pickle.dumps(msg_obj)
-        print("primary_node_address:")
-        print(self.primary_node_address)
+        # print("primary_node_address:")
+        # print(self.primary_node_address)
         self.client.sendreply(self.server.socket, self.primary_node_address, msg_bytes)
 
    
     def sendblock(self,payload):
-        print("----send block----")
+        print("[+] Send Block")
         msg_obj = packet.Message("sendblock", payload["block"])
         msg_bytes = pickle.dumps(msg_obj)
         self.client.sendblock(self.server.socket, payload["address"], msg_bytes)
 
 
     def sendfailhash(self,payload):
-        print('+++ send fail hash +++')
+        print('[+] Send Fail Hash')
         for node in self.committee_member:
             msg_obj = packet.Message("sendfailhash", {'failhash': payload, 'address': (self.client.ip, self.client.port)})
             msg_bytes = pickle.dumps(msg_obj)
@@ -1535,7 +1538,7 @@ class NodeManager(object):
         #self.tablsp.num=random.randint(0,2)
         self.tablsp.num=0
         #self.tablsp.rootList.append((self.tablsp.basetable[0],x))
-        print("root",self.tablsp.rootList)
+        # print("root",self.tablsp.rootList)
 
         ###如果根节点不够则注册成根节点
         # if len(self.tablsp.rootList)<1:
@@ -1553,7 +1556,7 @@ class NodeManager(object):
         for node in self.tablsp.rootList:
             self.tellDistriction(self.tablsp.num,node)
         #######################
-        print("seed_nodes:  ",seed_nodes)#test
+        # print("seed_nodes:  ",seed_nodes)#test
         self.committee_member = seed_nodes###continue
 
         for seed_node in seed_nodes:
@@ -1570,8 +1573,8 @@ class NodeManager(object):
                 self.tablsp.neighbourport.append(seed_node.port)
                 #设置距离
                 d=random.randint(1,4)
-                print ("insert distance in bootrs")
-                print (d)
+                # print ("insert distance in bootrs")
+                # print (d)
                 self.tablsp.neighbourdistance.append(d)
                 # 握手,加入lsptab中
                 self.sendversion(seed_node,
@@ -1611,7 +1614,7 @@ class NodeManager(object):
         msg_obj=packet.Message("respoflspr",payload)#表示这是对lspr的回复
         msg_bytes=pickle.dumps(msg_obj)
         sock=self.server.socket
-        print("num in lspr:",num)
+        # print("num in lspr:",num)
         target_node_address=self.tablsp.rootList[num]#error rootList没使用广播设置成公共的
                 
         self.client.respoflspr(sock,target_node_address,msg_bytes)
@@ -1630,7 +1633,7 @@ class NodeManager(object):
 	    #print("simu::",message)
 	    msg_obj=packet.Message("sendToRoot",payload)
 	    msg_bytes=pickle.dumps(msg_obj)
-	    print(self.tablsp.rootList)
+	    # print(self.tablsp.rootList)
 	    for node in self.tablsp.rootList:#rootList待指定
 		    self.client.sendToRoot(self.server.socket,node,msg_bytes)
 
@@ -1685,7 +1688,7 @@ class NodeManager(object):
             port=child[i][1]
             target_node_address=(ip,port)
             
-            print("+++i've broadcast+++")
+            # print("+++i've broadcast+++")
             self.client.broadcast(sock,target_node_address,msg_bytes)
         if k==0:
             self.floodAtLeaf(message)#进行泛洪
@@ -1698,7 +1701,7 @@ class NodeManager(object):
                 ip=child[i][0]
                 port=child[i][1]
                 target_node_address=(ip,port)
-                print("+++i've broadcast for the disconnect+++")
+                # print("+++i've broadcast for the disconnect+++")
                 self.client.broadcast(sock,target_node_address,msg_bytes)
 
 
@@ -1750,8 +1753,8 @@ class NodeManager(object):
             self.tablsp.neighbourport.append(new_seed_node.port)
             # 设置距离
             d=random.randint(1,4)
-            print ("insert distance in bootrs")
-            print (d)
+            # print ("insert distance in bootrs")
+            # print (d)
             self.tablsp.neighbourdistance.append(d)
             # 握手,加入lsptab中
             self.sendversion(new_seed_node,
